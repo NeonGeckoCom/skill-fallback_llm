@@ -23,7 +23,7 @@
 
 en-us:
   ask_chatgpt.intent:
-    - ask chatgpt what an umbrella is:
+    - ask chat gpt what an umbrella is:
         - question: what an umbrella is
     - tell chatgpt my name is neon:
         - question: my name is neon

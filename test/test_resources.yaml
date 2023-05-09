@@ -13,3 +13,4 @@ intents:
   # Padatious intents are the `.intent` file names
   padatious:
     - ask_chatgpt.intent
+  adapt: []
