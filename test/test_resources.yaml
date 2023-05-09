@@ -1,0 +1,15 @@
+# Specify resources to test here.
+
+# Specify languages to be tested
+languages:
+  - "en-us"
+
+# vocab is lowercase .voc file basenames
+vocab: []
+# dialog is .dialog file basenames (case-sensitive)
+dialog: []
+regex: []
+intents:
+  # Padatious intents are the `.intent` file names
+  padatious:
+    - ask_chatgpt.intent
