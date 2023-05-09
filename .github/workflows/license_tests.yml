@@ -5,3 +5,5 @@ on:
 jobs:
   license_tests:
     uses: neongeckocom/.github/.github/workflows/license_tests.yml@master
+    with:
+      packages_exclude: '^(precise-runner|fann2|tqdm|bs4|neon-core|nvidia|neon-skill-fallback|bitstruct).*'
