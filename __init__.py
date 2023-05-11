@@ -80,14 +80,16 @@ class LLMSkill(FallbackSkill):
 
     @intent_file_handler("enable_fallback.intent")
     def handle_enable_fallback(self, message):
-        self.settings['fallback_enabled'] = True
-        self.register_fallback(self.fallback_llm, 85)
+        if not self.fallback_enabled:
+            self.settings['fallback_enabled'] = True
+            self.register_fallback(self.fallback_llm, 85)
         self.speak_dialog("fallback_enabled")
 
     @intent_file_handler("disable_fallback.intent")
     def handle_disable_fallback(self, message):
-        self.settings['fallback_enabled'] = False
-        self.remove_fallback(self.fallback_llm)
+        if self.fallback_enabled:
+            self.settings['fallback_enabled'] = False
+            self.remove_fallback(self.fallback_llm)
         self.speak_dialog("fallback_disabled")
 
     @intent_file_handler("ask_chatgpt.intent")

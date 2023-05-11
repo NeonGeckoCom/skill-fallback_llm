@@ -4,10 +4,20 @@
 Get an LLM response from the Neon Diana backend.
 
 ## Description
-Converse with a bot by telling Neon to "ask Chat GPT". This also provides some
-better responses when no skill is able to provide a specific response.
+Converse with an LLM and enable LLM responses when Neon doesn't have a better
+response.
+
+To send a single query to an LLM, you can ask Neon to "ask Chat GPT <something>".
+To start conversing with an LLM, ask to "talk to Chat GPT" and have all of your input
+sent to an LLM until you say goodbye or stop talking for awhile.
+
+Enable fallback behavior by asking to "enable LLM fallback skill" or disable it
+by asking to "disable LLM fallback".
 
 ## Examples 
 
 * "Explain quantum computing in simple terms"
 * "Ask chat GPT what an LLM is"
+* "Talk to chat GPT"
+* "Enable LLM fallback skill"
+* "Disable LLM fallback skill"
