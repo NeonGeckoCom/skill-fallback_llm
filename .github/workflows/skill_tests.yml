@@ -17,4 +17,4 @@ jobs:
   skill_install_tests:
     uses: neongeckocom/.github/.github/workflows/skill_test_installation.yml@master
     with:
-      skip_osm: true
+      test_osm: false
