@@ -84,7 +84,7 @@ class LLMSkill(FallbackSkill):
         self.register_fallback(self.fallback_llm, 85)
         self.speak_dialog("fallback_enabled")
 
-    @intent_file_handler("diable_fallback.intent")
+    @intent_file_handler("disable_fallback.intent")
     def handle_disable_fallback(self, message):
         self.settings['fallback_enabled'] = False
         self.remove_fallback(self.fallback_llm)
