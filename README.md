@@ -1,35 +1,23 @@
-# ChatGPT Persona Fallback Skill
+# <img src='./logo.svg' card_color="#FF8600" width="50" style="vertical-align:bottom" style="vertical-align:bottom">LLM Fallback  
+  
+## Summary
+Get an LLM response from the Neon Diana backend.
 
-When in doubt, ask chatgpt, powered by [OVOS Persona](https://github.com/OpenVoiceOS/ovos-solver-plugin-openai-persona)
+## Description
+Converse with an LLM and enable LLM responses when Neon doesn't have a better
+response.
 
-You need to configure an api_key, get it at https://beta.openai.com/account/api-keys
+To send a single query to an LLM, you can ask Neon to "ask Chat GPT <something>".
+To start conversing with an LLM, ask to "talk to Chat GPT" and have all of your input
+sent to an LLM until you say goodbye or stop talking for awhile.
 
-
-## About 
-
-Capabilities:
-- Remembers what user said earlier in the conversation
-- Trained to decline inappropriate requests
-
-Limitations:
-
-- May occasionally generate incorrect information
-- May occasionally produce harmful instructions or biased content
-- Limited knowledge of world and events after 2021
-
-## Configuration
-
-Under skill settings you can tweak some parameters for chatGPT
-
-
-- `key` - your api_key to access OpenAI
-- `persona` - can be used to create a "persona", give a personality to chatGPT
-- `model` - LLM model to use, valid options `"gpt-3.5-turbo", "ada", "babbage", "curie", "text-davinci-002", "text-davinci-003"`
-
-The default persona is `helpful, creative, clever, and very friendly.`
-
+Enable fallback behavior by asking to "enable LLM fallback skill" or disable it
+by asking to "disable LLM fallback".
 
 ## Examples 
 
 * "Explain quantum computing in simple terms"
-* "Got any creative ideas for a 10 year old’s birthday?"
+* "Ask chat GPT what an LLM is"
+* "Talk to chat GPT"
+* "Enable LLM fallback skill"
+* "Disable LLM fallback skill"
