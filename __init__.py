@@ -25,6 +25,7 @@
 # LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
 # NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 # SOFTWARE,  EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+from threading import Thread
 from time import time
 
 from ovos_utils import classproperty
@@ -119,9 +120,13 @@ class LLMSkill(FallbackSkill):
             self.speak_dialog("end_chat")
             self.chatting.pop(user)
             return True
+        Thread(target=self._threaded_converse, args=(utterance, user),
+               daemon=True).start()
+        return True
+
+    def _threaded_converse(self, utterance, user):
         self.speak(self._get_response(utterance, user))
         self.chatting[user] = time()
-        return True
 
 
 def create_skill():
