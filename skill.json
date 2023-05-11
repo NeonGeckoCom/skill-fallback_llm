@@ -1,0 +1,42 @@
+{
+    "title": "LLM Fallback",
+    "url": "https://github.com/NeonGeckoCom/skill-fallback_llm",
+    "summary": "Get an LLM response from the Neon Diana backend.",
+    "short_description": "Get an LLM response from the Neon Diana backend.",
+    "description": "Converse with a bot by telling Neon to \"ask Chat GPT\". This also provides some better responses when no skill is able to provide a specific response.",
+    "examples": [
+        "Explain quantum computing in simple terms",
+        "Ask chat GPT what an LLM is"
+    ],
+    "desktopFile": false,
+    "warning": "",
+    "systemDeps": false,
+    "requirements": {
+        "python": [
+            "neon-utils~=1.4",
+            "neon_mq_connector~=0.6,>=0.6.1a9",
+            "ovos-utils~=0.0.28",
+            "ovos_workshop~=0.0.11"
+        ],
+        "system": {},
+        "skill": []
+    },
+    "incompatible_skills": [],
+    "platforms": [
+        "i386",
+        "x86_64",
+        "ia64",
+        "arm64",
+        "arm"
+    ],
+    "branch": "master",
+    "license": "BSD-3-Clause",
+    "icon": "logo.svg",
+    "category": "",
+    "categories": [],
+    "tags": [],
+    "credits": [],
+    "skillname": "skill-fallback_llm",
+    "authorname": "NeonGeckoCom",
+    "foldername": null
+}
