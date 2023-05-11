@@ -55,10 +55,18 @@ class LLMSkill(FallbackSkill):
         self.chat_history = dict()
         self._default_user = "local"
         self.chatting = dict()
-        self.chat_timeout_seconds = 300
+
+    @property
+    def chat_timeout_seconds(self):
+        return self.settings.get("chat_timeout_seconds") or 300
+
+    @property
+    def fallback_enabled(self):
+        return self.settings.get("fallback_enabled", False)
 
     def initialize(self):
-        self.register_fallback(self.fallback_llm, 85)
+        if self.fallback_enabled:
+            self.register_fallback(self.fallback_llm, 85)
 
     def fallback_llm(self, message):
         utterance = message.data['utterance']
@@ -69,6 +77,16 @@ class LLMSkill(FallbackSkill):
             return False
         self.speak(answer)
         return True
+
+    @intent_file_handler("enable_fallback.intent")
+    def handle_enable_fallback(self, message):
+        self.settings['fallback_enabled'] = True
+        self.register_fallback(self.fallback_llm, 85)
+
+    @intent_file_handler("diable_fallback.intent")
+    def handle_disable_fallback(self, message):
+        self.settings['fallback_enabled'] = False
+        self.remove_fallback(self.fallback_llm)
 
     @intent_file_handler("ask_chatgpt.intent")
     def handle_ask_chatgpt(self, message):

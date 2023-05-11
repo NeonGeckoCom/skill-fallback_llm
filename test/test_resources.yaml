@@ -18,4 +18,6 @@ intents:
   padatious:
     - ask_chatgpt.intent
     - chat_with_llm.intent
+    - disable_fallback.intent
+    - enable_fallback.intent
   adapt: []

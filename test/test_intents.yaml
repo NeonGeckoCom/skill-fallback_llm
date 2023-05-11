@@ -31,8 +31,14 @@ en-us:
     - chat with chat gpt
     - talk to chatgpt
     - start a conversation with chat g p t
+  enable_fallback.intent:
+    - enable chat gpt fallback
+  disable_fallback.intent:
+    - disable chat g p t fallback skill
 
 unmatched intents:
   en-us:
     - ask neon what time it is
     - tell me about rocks
+    - enable wake words
+    - disable listening confirmation
