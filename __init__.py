@@ -71,7 +71,7 @@ class LLMSkill(FallbackSkill):
     def fallback_llm(self, message):
         utterance = message.data['utterance']
         user = get_message_user(message) or self._default_user
-        answer = self._get_response(utterance, user)
+        answer = self._get_llm_response(utterance, user)
         if not answer:
             LOG.info(f"No fallback response")
             return False
@@ -82,18 +82,20 @@ class LLMSkill(FallbackSkill):
     def handle_enable_fallback(self, message):
         self.settings['fallback_enabled'] = True
         self.register_fallback(self.fallback_llm, 85)
+        self.speak_dialog("fallback_enabled")
 
     @intent_file_handler("diable_fallback.intent")
     def handle_disable_fallback(self, message):
         self.settings['fallback_enabled'] = False
         self.remove_fallback(self.fallback_llm)
+        self.speak_dialog("fallback_disabled")
 
     @intent_file_handler("ask_chatgpt.intent")
     def handle_ask_chatgpt(self, message):
         utterance = message.data['utterance']
         user = get_message_user(message) or self._default_user
         try:
-            resp = self._get_response(utterance, user)
+            resp = self._get_llm_response(utterance, user)
             self.speak(resp)
         except Exception as e:
             LOG.exception(e)
@@ -105,7 +107,7 @@ class LLMSkill(FallbackSkill):
         self.speak_dialog("start_chat", {"llm": "chat GPT"})
         self.chatting[user] = time()
 
-    def _get_response(self, query: str, user: str) -> str:
+    def _get_llm_response(self, query: str, user: str) -> str:
         """
         Get a response from an LLM
         :param query: User utterance to generate a response to
@@ -143,8 +145,13 @@ class LLMSkill(FallbackSkill):
         return True
 
     def _threaded_converse(self, utterance, user):
-        self.speak(self._get_response(utterance, user))
-        self.chatting[user] = time()
+        try:
+            resp = self._get_llm_response(utterance, user)
+            self.speak(resp)
+            self.chatting[user] = time()
+        except Exception as e:
+            LOG.exception(e)
+            self.speak_dialog("no_chatgpt")
 
 
 def create_skill():
