@@ -25,6 +25,7 @@
 # LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
 # NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 # SOFTWARE,  EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+from time import time
 
 from ovos_utils import classproperty
 from ovos_utils.log import LOG
@@ -52,6 +53,8 @@ class LLMSkill(FallbackSkill):
         super().__init__("LLM")
         self.chat_history = dict()
         self._default_user = "local"
+        self.chatting = dict()
+        self.chat_timeout_seconds = 300
 
     def initialize(self):
         self.register_fallback(self.fallback_llm, 85)
@@ -70,8 +73,18 @@ class LLMSkill(FallbackSkill):
     def handle_ask_chatgpt(self, message):
         utterance = message.data['utterance']
         user = get_message_user(message) or self._default_user
-        resp = self._get_response(utterance, user)
-        self.speak(resp)
+        try:
+            resp = self._get_response(utterance, user)
+            self.speak(resp)
+        except Exception as e:
+            LOG.exception(e)
+            self.speak_dialog("no_chatgpt")
+
+    @intent_file_handler("chat_with_llm.intent")
+    def handle_chat_with_llm(self, message):
+        user = get_message_user(message) or self._default_user
+        self.speak_dialog("start_chat", {"llm": "chat GPT"})
+        self.chatting[user] = time()
 
     def _get_response(self, query: str, user: str) -> str:
         """
@@ -85,12 +98,30 @@ class LLMSkill(FallbackSkill):
         mq_resp = send_mq_request("/llm", {"query": query,
                                            "history": self.chat_history[user]},
                                   "chat_gpt_input")
-        resp = mq_resp.get("response") or ""  # TODO: Get response from MQ endpoint
+        resp = mq_resp.get("response") or ""
         if resp:
             self.chat_history[user].append(("user", query))
             self.chat_history[user].append(("llm", resp))
         LOG.debug(f"Got LLM response: {resp}")
         return resp
+
+    def converse(self, message=None):
+        user = get_message_user(message) or self._default_user
+        if user not in self.chatting:
+            return False
+        last_message = self.chatting[user]
+        if time() - last_message > self.chat_timeout_seconds:
+            LOG.info(f"Chat session timed out")
+            self.chatting.pop(user)
+            return False
+        utterance = message.data.get('utterances', [])[0]
+        if self.voc_match(utterance, "exit"):
+            self.speak_dialog("end_chat")
+            self.chatting.pop(user)
+            return True
+        self.speak(self._get_response(utterance, user))
+        self.chatting[user] = time()
+        return True
 
 
 def create_skill():

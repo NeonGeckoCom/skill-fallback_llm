@@ -27,6 +27,10 @@ en-us:
         - question: what an umbrella is
     - tell chatgpt my name is neon:
         - question: my name is neon
+  chat_with_llm.intent:
+    - chat with chat gpt
+    - talk to chatgpt
+    - start a conversation with chat g p t
 
 unmatched intents:
   en-us:

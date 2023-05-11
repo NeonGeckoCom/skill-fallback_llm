@@ -5,12 +5,17 @@ languages:
   - "en-us"
 
 # vocab is lowercase .voc file basenames
-vocab: []
+vocab:
+  - exit
 # dialog is .dialog file basenames (case-sensitive)
-dialog: []
+dialog:
+  - end_chat
+  - no_chatgpt
+  - start_chat
 regex: []
 intents:
   # Padatious intents are the `.intent` file names
   padatious:
     - ask_chatgpt.intent
+    - chat_with_llm.intent
   adapt: []
