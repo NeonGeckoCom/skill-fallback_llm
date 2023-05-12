@@ -68,8 +68,6 @@ class LLMSkill(FallbackSkill):
         if self.fallback_enabled:
             self.register_fallback(self.fallback_llm, 85)
 
-        self.add_event("neon.llm.dismiss", self.handle_llm_gui_dismiss)
-
     def fallback_llm(self, message):
         utterance = message.data['utterance']
         user = get_message_user(message) or self._default_user
@@ -113,10 +111,6 @@ class LLMSkill(FallbackSkill):
         # TODO: Translatable notification text
         self.speak_dialog("start_chat", {"llm": "chat GPT"})
         self._reset_expiration(user)
-
-    def handle_llm_gui_dismiss(self, message):
-        user = message.data.get("user")
-        self._stop_chatting(message)
 
     def _stop_chatting(self, message):
         user = get_message_user(message) or self._default_user
