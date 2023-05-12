@@ -107,8 +107,7 @@ class LLMSkill(FallbackSkill):
     def handle_chat_with_llm(self, message):
         user = get_message_user(message) or self._default_user
         self.gui.show_controlled_notification(
-            "Chatting with an LLM. Say goodbye to stop.")
-        # TODO: Translatable notification text
+            self.translate("notify_llm_active"))
         self.speak_dialog("start_chat", {"llm": "chat GPT"})
         self._reset_expiration(user)
 
