@@ -108,9 +108,59 @@ class TestSkill(unittest.TestCase):
         self.skill.handle_chat_with_llm(fake_msg)
         self.assertIsInstance(self.skill.chatting["test_user"], float)
 
+    def test_handle_email_chat_history(self):
+        real_send_email = self.skill._send_email
+        self.skill._send_email = Mock()
+
+        from neon_utils.user_utils import get_default_user_config
+        default_profile = get_default_user_config()
+        default_profile['user']['username'] = 'test_user'
+        default_profile['user']['email'] = ''
+        test_message = Message("", {}, {"username": "test_user",
+                                        "user_profiles": [default_profile]})
+        # No Chat History
+        self.skill.handle_email_chat_history(test_message)
+        self.skill.speak_dialog.assert_called_once_with("no_chat_history",
+                                                        private=True)
+
+        # No Email Address
+        self.skill.chat_history['test_user'] = [("user", "hey"), ("llm", "hi")]
+        self.skill.handle_email_chat_history(test_message)
+        self.skill.speak_dialog.assert_called_with("no_email_address",
+                                                   private=True)
+
+        # Valid Request
+        test_message.context['user_profiles'][0]['user']['email'] = \
+            "test@neon.ai"
+        self.skill.handle_email_chat_history(test_message)
+        self.skill.speak_dialog.assert_called_with("sending_chat_history",
+                                                   {"email": "test@neon.ai"},
+                                                   private=True)
+        self.skill._send_email.assert_called_once_with("test_user",
+                                                       "test@neon.ai")
+
+        self.skill._send_email = real_send_email
+
     def test_converse(self):
         # TODO
         pass
+
+    def test_threaded_converse(self):
+        # TODO
+        pass
+
+    def test_reset_expiration(self):
+        # TODO
+        pass
+
+    def test_stop_chatting(self):
+        # TODO
+        pass
+
+    def test_send_email(self):
+        # TODO
+        pass
+
 
 if __name__ == '__main__':
     unittest.main()

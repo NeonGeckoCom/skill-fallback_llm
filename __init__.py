@@ -32,8 +32,10 @@ from time import time
 from ovos_utils import classproperty
 from ovos_utils.log import LOG
 from ovos_utils.process_utils import RuntimeRequirements
-from ovos_workshop.skills.fallback import FallbackSkill
+# from ovos_workshop.skills.fallback import FallbackSkill
+from neon_utils.skills.neon_fallback_skill import NeonFallbackSkill
 from neon_utils.message_utils import get_message_user
+from neon_utils.user_utils import get_user_prefs
 from neon_mq_connector.utils.client_utils import send_mq_request
 from mycroft.skills.mycroft_skill.decorators import intent_file_handler
 
@@ -42,7 +44,7 @@ class LLM(Enum):
     GPT = "Chat GPT"
 
 
-class LLMSkill(FallbackSkill):
+class LLMSkill(NeonFallbackSkill):
     @classproperty
     def runtime_requirements(self):
         return RuntimeRequirements(internet_before_load=True,
@@ -122,6 +124,31 @@ class LLMSkill(FallbackSkill):
             llm = LLM.GPT
         self.speak_dialog("start_chat", {"llm": llm.value})
         self._reset_expiration(user)
+
+    @intent_file_handler("email_chat_history.intent")
+    def handle_email_chat_history(self, message):
+        user_prefs = get_user_prefs(message)['user']
+        username = user_prefs['username']
+        email_addr = user_prefs['email']
+        if username not in self.chat_history:
+            LOG.debug(f"No history for {username}")
+            self.speak_dialog("no_chat_history", private=True)
+            return
+        if not email_addr:
+            LOG.debug("No email address")
+            # TODO: Capture Email address
+            self.speak_dialog("no_email_address", private=True)
+            return
+        self.speak_dialog("sending_chat_history",
+                          {"email": email_addr}, private=True)
+        self._send_email(username, email_addr)
+
+    def _send_email(self, username: str, email: str):
+        history = self.chat_history.get(username)
+        email_text = ""
+        for entry in history:
+            email_text += f"{entry[0].rjust(8, ' ')} - {entry[1]}"
+        self.send_email("LLM Conversation", email_text, email_addr=email)
 
     def _stop_chatting(self, message):
         user = get_message_user(message) or self._default_user

@@ -42,6 +42,9 @@ en-us:
     - enable chat gpt fallback
   disable_fallback.intent:
     - disable chat g p t fallback skill
+  enable_chat_history.intent:
+    - send me our conversation
+    - email my your chat history
 
 unmatched intents:
   en-us:
