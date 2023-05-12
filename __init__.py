@@ -33,7 +33,7 @@ from ovos_utils import classproperty
 from ovos_utils.log import LOG
 from ovos_utils.process_utils import RuntimeRequirements
 # from ovos_workshop.skills.fallback import FallbackSkill
-from neon_utils.skills.neon_fallback_skill import NeonFallbackSkill
+from neon_utils.skills.neon_fallback_skill import NeonFallbackSkill, NeonSkill
 from neon_utils.message_utils import get_message_user
 from neon_utils.user_utils import get_user_prefs
 from neon_mq_connector.utils.client_utils import send_mq_request
@@ -148,7 +148,8 @@ class LLMSkill(NeonFallbackSkill):
         email_text = ""
         for entry in history:
             email_text += f"{entry[0].rjust(8, ' ')} - {entry[1]}"
-        self.send_email("LLM Conversation", email_text, email_addr=email)
+        NeonSkill.send_email(self, "LLM Conversation", email_text,
+                             email_addr=email)
 
     def _stop_chatting(self, message):
         user = get_message_user(message) or self._default_user
