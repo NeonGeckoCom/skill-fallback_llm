@@ -106,8 +106,16 @@ class LLMSkill(FallbackSkill):
     @intent_file_handler("chat_with_llm.intent")
     def handle_chat_with_llm(self, message):
         user = get_message_user(message) or self._default_user
+        self.gui.show_controlled_notification(
+            self.translate("notify_llm_active"))
         self.speak_dialog("start_chat", {"llm": "chat GPT"})
-        self.chatting[user] = time()
+        self._reset_expiration(user)
+
+    def _stop_chatting(self, message):
+        user = get_message_user(message) or self._default_user
+        self.gui.remove_controlled_notification()
+        self.chatting.pop(user)
+        self.speak_dialog("end_chat")
 
     def _get_llm_response(self, query: str, user: str) -> str:
         """
@@ -135,12 +143,11 @@ class LLMSkill(FallbackSkill):
         last_message = self.chatting[user]
         if time() - last_message > self.chat_timeout_seconds:
             LOG.info(f"Chat session timed out")
-            self.chatting.pop(user)
+            self._stop_chatting(message)
             return False
         utterance = message.data.get('utterances', [])[0]
         if self.voc_match(utterance, "exit"):
-            self.speak_dialog("end_chat")
-            self.chatting.pop(user)
+            self._stop_chatting(message)
             return True
         Thread(target=self._threaded_converse, args=(utterance, user),
                daemon=True).start()
@@ -150,10 +157,17 @@ class LLMSkill(FallbackSkill):
         try:
             resp = self._get_llm_response(utterance, user)
             self.speak(resp)
-            self.chatting[user] = time()
+            self._reset_expiration(user)
         except Exception as e:
             LOG.exception(e)
             self.speak_dialog("no_chatgpt")
+
+    def _reset_expiration(self, user):
+        self.chatting[user] = time()
+        event_name = f"end_converse.{user}"
+        self.cancel_scheduled_event(event_name)
+        self.schedule_event(self._stop_chatting, self.chat_timeout_seconds,
+                            {'user': user}, event_name)
 
 
 def create_skill():

@@ -12,6 +12,7 @@ dialog:
   - end_chat
   - no_chatgpt
   - start_chat
+  - notify_llm_active
 regex: []
 intents:
   # Padatious intents are the `.intent` file names
