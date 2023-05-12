@@ -116,13 +116,10 @@ class LLMSkill(FallbackSkill):
 
     def handle_llm_gui_dismiss(self, message):
         user = message.data.get("user")
-        self._stop_chatting(user)
+        self._stop_chatting(message)
 
-    def _stop_chatting(self, user):
-        if isinstance(user, dict):
-            # Scheduled event
-            user = user.get('user')
-        user = user or self._default_user
+    def _stop_chatting(self, message):
+        user = get_message_user(message) or self._default_user
         self.gui.remove_controlled_notification()
         self.chatting.pop(user)
         self.speak_dialog("end_chat")
@@ -153,11 +150,11 @@ class LLMSkill(FallbackSkill):
         last_message = self.chatting[user]
         if time() - last_message > self.chat_timeout_seconds:
             LOG.info(f"Chat session timed out")
-            self._stop_chatting(user)
+            self._stop_chatting(message)
             return False
         utterance = message.data.get('utterances', [])[0]
         if self.voc_match(utterance, "exit"):
-            self._stop_chatting(user)
+            self._stop_chatting(message)
             return True
         Thread(target=self._threaded_converse, args=(utterance, user),
                daemon=True).start()
