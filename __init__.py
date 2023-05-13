@@ -156,6 +156,8 @@ class LLMSkill(NeonFallbackSkill):
         self.gui.remove_controlled_notification()
         self.chatting.pop(user)
         self.speak_dialog("end_chat")
+        event_name = f"end_converse.{user}"
+        self.cancel_scheduled_event(event_name)
 
     def _get_llm_response(self, query: str, user: str) -> str:
         """
@@ -185,7 +187,8 @@ class LLMSkill(NeonFallbackSkill):
             LOG.info(f"Chat session timed out")
             self._stop_chatting(message)
             return False
-        utterance = message.data.get('utterances', [])[0]
+        # Take final utterance as one that wasn't normalized
+        utterance = message.data.get('utterances', [""])[-1]
         if self.voc_match(utterance, "exit"):
             self._stop_chatting(message)
             return True
