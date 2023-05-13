@@ -44,7 +44,8 @@ en-us:
     - disable chat g p t fallback skill
   enable_chat_history.intent:
     - send me our conversation
-    - email my your chat history
+    - email me your chat history
+    - email me a copy of our conversation
 
 unmatched intents:
   en-us:
