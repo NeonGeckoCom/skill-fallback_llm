@@ -147,7 +147,7 @@ class LLMSkill(NeonFallbackSkill):
         history = self.chat_history.get(username)
         email_text = ""
         for entry in history:
-            email_text += f"{entry[0].rjust(8, ' ')} - {entry[1]}"
+            email_text += f"[{entry[0].rjust(8, ' ')}] - {entry[1]}\n"
         NeonSkill.send_email(self, "LLM Conversation", email_text,
                              email_addr=email)
 
