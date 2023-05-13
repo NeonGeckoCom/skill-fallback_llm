@@ -7,6 +7,7 @@ languages:
 # vocab is lowercase .voc file basenames
 vocab:
   - exit
+  - chat_gpt
 # dialog is .dialog file basenames (case-sensitive)
 dialog:
   - end_chat

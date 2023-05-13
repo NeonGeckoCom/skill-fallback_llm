@@ -119,8 +119,7 @@ class LLMSkill(FallbackSkill):
             llm = LLM.GPT
         else:
             LOG.warning(f"Requested invalid LLM: {llm}")
-            # TODO: Fallback to a default or speak that an LLM isn't available
-            pass
+            llm = LLM.GPT
         self.speak_dialog("start_chat", {"llm": llm.value})
         self._reset_expiration(user)
 
