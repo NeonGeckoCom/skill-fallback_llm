@@ -25,6 +25,7 @@
 # LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
 # NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 # SOFTWARE,  EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+from enum import Enum
 from threading import Thread
 from time import time
 
@@ -35,6 +36,10 @@ from ovos_workshop.skills.fallback import FallbackSkill
 from neon_utils.message_utils import get_message_user
 from neon_mq_connector.utils.client_utils import send_mq_request
 from mycroft.skills.mycroft_skill.decorators import intent_file_handler
+
+
+class LLM(Enum):
+    GPT = "Chat GPT"
 
 
 class LLMSkill(FallbackSkill):
@@ -65,6 +70,7 @@ class LLMSkill(FallbackSkill):
         return self.settings.get("fallback_enabled", False)
 
     def initialize(self):
+        self.register_entity_file("llm")
         if self.fallback_enabled:
             self.register_fallback(self.fallback_llm, 85)
 
@@ -108,7 +114,14 @@ class LLMSkill(FallbackSkill):
         user = get_message_user(message) or self._default_user
         self.gui.show_controlled_notification(
             self.translate("notify_llm_active"))
-        self.speak_dialog("start_chat", {"llm": "chat GPT"})
+        llm = message.data.get('llm')
+        if self.voc_match(llm, "chat_gpt"):
+            llm = LLM.GPT
+        else:
+            LOG.warning(f"Requested invalid LLM: {llm}")
+            # TODO: Fallback to a default or speak that an LLM isn't available
+            pass
+        self.speak_dialog("start_chat", {"llm": llm.value})
         self._reset_expiration(user)
 
     def _stop_chatting(self, message):
