@@ -9,10 +9,13 @@ response.
 
 To send a single query to an LLM, you can ask Neon to "ask Chat GPT <something>".
 To start conversing with an LLM, ask to "talk to Chat GPT" and have all of your input
-sent to an LLM until you say goodbye or stop talking for awhile.
+sent to an LLM until you say goodbye or stop talking for a while.
 
 Enable fallback behavior by asking to "enable LLM fallback skill" or disable it
 by asking to "disable LLM fallback".
+
+To have a copy of LLM interactions sent via email, ask Neon to 
+"email me a copy of our conversation".
 
 ## Examples 
 
@@ -21,3 +24,4 @@ by asking to "disable LLM fallback".
 * "Talk to chat GPT"
 * "Enable LLM fallback skill"
 * "Disable LLM fallback skill"
+* "Email me a copy of our conversation"

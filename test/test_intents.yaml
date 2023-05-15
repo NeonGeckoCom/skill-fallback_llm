@@ -46,6 +46,7 @@ en-us:
     - send me our conversation
     - email me your chat history
     - email me a copy of our conversation
+    - send me a transcript of our chat
 
 unmatched intents:
   en-us:
@@ -53,3 +54,5 @@ unmatched intents:
     - tell me about rocks
     - enable wake words
     - disable listening confirmation
+    - send me an email
+    - email me a support ticket
