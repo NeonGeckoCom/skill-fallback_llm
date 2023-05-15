@@ -32,8 +32,10 @@ from time import time
 from ovos_utils import classproperty
 from ovos_utils.log import LOG
 from ovos_utils.process_utils import RuntimeRequirements
-from ovos_workshop.skills.fallback import FallbackSkill
+# from ovos_workshop.skills.fallback import FallbackSkill
+from neon_utils.skills.neon_fallback_skill import NeonFallbackSkill, NeonSkill
 from neon_utils.message_utils import get_message_user
+from neon_utils.user_utils import get_user_prefs
 from neon_mq_connector.utils.client_utils import send_mq_request
 from mycroft.skills.mycroft_skill.decorators import intent_file_handler
 
@@ -42,7 +44,7 @@ class LLM(Enum):
     GPT = "Chat GPT"
 
 
-class LLMSkill(FallbackSkill):
+class LLMSkill(NeonFallbackSkill):
     @classproperty
     def runtime_requirements(self):
         return RuntimeRequirements(internet_before_load=True,
@@ -123,11 +125,40 @@ class LLMSkill(FallbackSkill):
         self.speak_dialog("start_chat", {"llm": llm.value})
         self._reset_expiration(user)
 
+    @intent_file_handler("email_chat_history.intent")
+    def handle_email_chat_history(self, message):
+        user_prefs = get_user_prefs(message)['user']
+        username = user_prefs['username']
+        email_addr = user_prefs['email']
+        if username not in self.chat_history:
+            LOG.debug(f"No history for {username}")
+            self.speak_dialog("no_chat_history", private=True)
+            return
+        if not email_addr:
+            LOG.debug("No email address")
+            # TODO: Capture Email address
+            self.speak_dialog("no_email_address", private=True)
+            return
+        self.speak_dialog("sending_chat_history",
+                          {"email": email_addr}, private=True)
+        self._send_email(username, email_addr)
+
+    def _send_email(self, username: str, email: str):
+        history = self.chat_history.get(username)
+        email_text = ""
+        for entry in history:
+            formatted = entry[1].replace('\n\n', '\n').replace('\n', '\n\t...')
+            email_text += f"[{entry[0]}] {formatted}\n"
+        NeonSkill.send_email(self, "LLM Conversation", email_text,
+                             email_addr=email)
+
     def _stop_chatting(self, message):
         user = get_message_user(message) or self._default_user
         self.gui.remove_controlled_notification()
         self.chatting.pop(user)
         self.speak_dialog("end_chat")
+        event_name = f"end_converse.{user}"
+        self.cancel_scheduled_event(event_name)
 
     def _get_llm_response(self, query: str, user: str) -> str:
         """
@@ -143,7 +174,8 @@ class LLMSkill(FallbackSkill):
                                   "chat_gpt_input")
         resp = mq_resp.get("response") or ""
         if resp:
-            self.chat_history[user].append(("user", query))
+            username = "user" if user == self._default_user else user
+            self.chat_history[user].append((username, query))
             self.chat_history[user].append(("llm", resp))
         LOG.debug(f"Got LLM response: {resp}")
         return resp
@@ -157,7 +189,8 @@ class LLMSkill(FallbackSkill):
             LOG.info(f"Chat session timed out")
             self._stop_chatting(message)
             return False
-        utterance = message.data.get('utterances', [])[0]
+        # Take final utterance as one that wasn't normalized
+        utterance = message.data.get('utterances', [""])[-1]
         if self.voc_match(utterance, "exit"):
             self._stop_chatting(message)
             return True

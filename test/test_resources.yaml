@@ -14,6 +14,9 @@ dialog:
   - no_chatgpt
   - start_chat
   - notify_llm_active
+  - no_chat_history
+  - no_email_address
+  - sending_chat_history
 regex: []
 intents:
   # Padatious intents are the `.intent` file names
@@ -22,4 +25,5 @@ intents:
     - chat_with_llm.intent
     - disable_fallback.intent
     - enable_fallback.intent
+    - email_chat_history.intent
   adapt: []
