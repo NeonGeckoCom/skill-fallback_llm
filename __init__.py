@@ -173,7 +173,8 @@ class LLMSkill(NeonFallbackSkill):
                                   "chat_gpt_input")
         resp = mq_resp.get("response") or ""
         if resp:
-            self.chat_history[user].append(("user", query))
+            username = "user" if user == self._default_user else user
+            self.chat_history[user].append((username, query))
             self.chat_history[user].append(("llm", resp))
         LOG.debug(f"Got LLM response: {resp}")
         return resp
