@@ -103,6 +103,7 @@ class TestSkill(unittest.TestCase):
         self.skill._get_llm_response = real_get_response
 
     def test_handle_chat_with_llm(self):
+        self.skill.settings['chat_timeout_seconds'] = 300
         load_language(self.skill.lang)
         fake_msg = Message("test", {},
                            {"username": "test_user"})
