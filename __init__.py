@@ -29,6 +29,7 @@ from enum import Enum
 from threading import Thread
 from time import time
 
+from lingua_franca.format import nice_duration
 from ovos_utils import classproperty
 from ovos_utils.log import LOG
 from ovos_utils.process_utils import RuntimeRequirements
@@ -122,7 +123,10 @@ class LLMSkill(NeonFallbackSkill):
         else:
             LOG.warning(f"Requested invalid LLM: {llm}")
             llm = LLM.GPT
-        self.speak_dialog("start_chat", {"llm": llm.value})
+        timeout_duration = nice_duration(self.chat_timeout_seconds)
+        self.speak_dialog("start_chat", {"llm": llm.value,
+                                         "timeout": timeout_duration},
+                          private=True)
         self._reset_expiration(user)
 
     @intent_file_handler("email_chat_history.intent")

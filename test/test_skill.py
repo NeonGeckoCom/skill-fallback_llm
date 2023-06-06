@@ -33,6 +33,7 @@ from os.path import dirname, join, exists
 from mock import Mock
 from ovos_utils.messagebus import FakeBus
 from mycroft_bus_client import Message
+from lingua_franca import load_language
 from mycroft.skills.skill_loader import SkillLoader
 
 
@@ -102,11 +103,15 @@ class TestSkill(unittest.TestCase):
         self.skill._get_llm_response = real_get_response
 
     def test_handle_chat_with_llm(self):
+        load_language(self.skill.lang)
         fake_msg = Message("test", {},
                            {"username": "test_user"})
         self.skill.chatting = dict()
         self.skill.handle_chat_with_llm(fake_msg)
         self.assertIsInstance(self.skill.chatting["test_user"], float)
+        self.skill.speak_dialog.assert_called_once_with(
+            "start_chat", {"llm": "Chat GPT", "timeout": "five minutes"},
+            private=True)
 
     def test_handle_email_chat_history(self):
         real_send_email = self.skill._send_email
