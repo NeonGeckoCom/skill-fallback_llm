@@ -29,12 +29,13 @@ from enum import Enum
 from threading import Thread
 from time import time
 
+from ovos_bus_client import Message
 from ovos_utils import classproperty
 from ovos_utils.log import LOG
 from ovos_utils.process_utils import RuntimeRequirements
 # from ovos_workshop.skills.fallback import FallbackSkill
 from neon_utils.skills.neon_fallback_skill import NeonFallbackSkill, NeonSkill
-from neon_utils.message_utils import get_message_user
+from neon_utils.message_utils import get_message_user, dig_for_message
 from neon_utils.user_utils import get_user_prefs
 from neon_mq_connector.utils.client_utils import send_mq_request
 from mycroft.skills.mycroft_skill.decorators import intent_file_handler
@@ -124,6 +125,7 @@ class LLMSkill(NeonFallbackSkill):
             llm = LLM.GPT
         self.speak_dialog("start_chat", {"llm": llm.value})
         self._reset_expiration(user)
+        self._change_listening_mode("continuous", message)
 
     @intent_file_handler("email_chat_history.intent")
     def handle_email_chat_history(self, message):
@@ -159,6 +161,7 @@ class LLMSkill(NeonFallbackSkill):
         self.speak_dialog("end_chat")
         event_name = f"end_converse.{user}"
         self.cancel_scheduled_event(event_name)
+        self._change_listening_mode("wakeword", message)
 
     def _get_llm_response(self, query: str, user: str) -> str:
         """
@@ -213,6 +216,11 @@ class LLMSkill(NeonFallbackSkill):
         self.cancel_scheduled_event(event_name)
         self.schedule_event(self._stop_chatting, self.chat_timeout_seconds,
                             {'user': user}, event_name)
+
+    def _change_listening_mode(self, mode: str, message: Message):
+        message = message.forward("recognizer_loop:state.set",
+                                  {"mode": mode})
+        self.bus.emit(message)
 
 
 def create_skill():
