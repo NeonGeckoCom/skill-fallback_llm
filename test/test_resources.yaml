@@ -1,0 +1,29 @@
+# Specify resources to test here.
+
+# Specify languages to be tested
+languages:
+  - "en-us"
+
+# vocab is lowercase .voc file basenames
+vocab:
+  - exit
+  - chat_gpt
+# dialog is .dialog file basenames (case-sensitive)
+dialog:
+  - end_chat
+  - no_chatgpt
+  - start_chat
+  - notify_llm_active
+  - no_chat_history
+  - no_email_address
+  - sending_chat_history
+regex: []
+intents:
+  # Padatious intents are the `.intent` file names
+  padatious:
+    - ask_chatgpt.intent
+    - chat_with_llm.intent
+    - disable_fallback.intent
+    - enable_fallback.intent
+    - email_chat_history.intent
+  adapt: []

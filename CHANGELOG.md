@@ -1,25 +1,52 @@
 # Changelog
 
-## [Unreleased](https://github.com/OpenVoiceOS/skill-ovos-fallback-chatgpt/tree/HEAD)
+## [0.0.1a6](https://github.com/NeonGeckoCom/skill-fallback_llm/tree/0.0.1a6) (2023-06-07)
 
-[Full Changelog](https://github.com/OpenVoiceOS/skill-ovos-fallback-chatgpt/compare/V0.0.2a1...HEAD)
-
-**Fixed bugs:**
-
-- feat/selectable\_model [\#6](https://github.com/OpenVoiceOS/skill-ovos-fallback-chatgpt/pull/6) ([JarbasAl](https://github.com/JarbasAl))
-
-## [V0.0.2a1](https://github.com/OpenVoiceOS/skill-ovos-fallback-chatgpt/tree/V0.0.2a1) (2023-03-20)
-
-[Full Changelog](https://github.com/OpenVoiceOS/skill-ovos-fallback-chatgpt/compare/1c73c6a5e5a16b4644004c85d465bc690c0db506...V0.0.2a1)
-
-**Implemented enhancements:**
-
-- feat/solver\_plugin [\#5](https://github.com/OpenVoiceOS/skill-ovos-fallback-chatgpt/pull/5) ([JarbasAl](https://github.com/JarbasAl))
+[Full Changelog](https://github.com/NeonGeckoCom/skill-fallback_llm/compare/0.0.1a5...0.0.1a6)
 
 **Merged pull requests:**
 
-- Feat/engine from settings [\#4](https://github.com/OpenVoiceOS/skill-ovos-fallback-chatgpt/pull/4) ([JarbasAl](https://github.com/JarbasAl))
-- feat/runtime\_requirements [\#3](https://github.com/OpenVoiceOS/skill-ovos-fallback-chatgpt/pull/3) ([JarbasAl](https://github.com/JarbasAl))
+- Add timeout notice to dialog [\#7](https://github.com/NeonGeckoCom/skill-fallback_llm/pull/7) ([NeonDaniel](https://github.com/NeonDaniel))
+
+## [0.0.1a5](https://github.com/NeonGeckoCom/skill-fallback_llm/tree/0.0.1a5) (2023-06-06)
+
+[Full Changelog](https://github.com/NeonGeckoCom/skill-fallback_llm/compare/0.0.1a4...0.0.1a5)
+
+**Merged pull requests:**
+
+- Stable dependencies [\#6](https://github.com/NeonGeckoCom/skill-fallback_llm/pull/6) ([NeonDaniel](https://github.com/NeonDaniel))
+
+## [0.0.1a4](https://github.com/NeonGeckoCom/skill-fallback_llm/tree/0.0.1a4) (2023-05-15)
+
+[Full Changelog](https://github.com/NeonGeckoCom/skill-fallback_llm/compare/0.0.1a3...0.0.1a4)
+
+**Merged pull requests:**
+
+- Add intent to email chat history [\#3](https://github.com/NeonGeckoCom/skill-fallback_llm/pull/3) ([NeonDaniel](https://github.com/NeonDaniel))
+
+## [0.0.1a3](https://github.com/NeonGeckoCom/skill-fallback_llm/tree/0.0.1a3) (2023-05-13)
+
+[Full Changelog](https://github.com/NeonGeckoCom/skill-fallback_llm/compare/0.0.1a2...0.0.1a3)
+
+**Merged pull requests:**
+
+- Update intent for flexibility [\#4](https://github.com/NeonGeckoCom/skill-fallback_llm/pull/4) ([NeonDaniel](https://github.com/NeonDaniel))
+
+## [0.0.1a2](https://github.com/NeonGeckoCom/skill-fallback_llm/tree/0.0.1a2) (2023-05-12)
+
+[Full Changelog](https://github.com/NeonGeckoCom/skill-fallback_llm/compare/0.0.1a1...0.0.1a2)
+
+**Merged pull requests:**
+
+- Notification when LLM is active [\#2](https://github.com/NeonGeckoCom/skill-fallback_llm/pull/2) ([NeonDaniel](https://github.com/NeonDaniel))
+
+## [0.0.1a1](https://github.com/NeonGeckoCom/skill-fallback_llm/tree/0.0.1a1) (2023-05-11)
+
+[Full Changelog](https://github.com/NeonGeckoCom/skill-fallback_llm/compare/1c73c6a5e5a16b4644004c85d465bc690c0db506...0.0.1a1)
+
+**Merged pull requests:**
+
+- Initial implementation of Neon skill to connect to MQ service [\#1](https://github.com/NeonGeckoCom/skill-fallback_llm/pull/1) ([NeonDaniel](https://github.com/NeonDaniel))
 
 
 

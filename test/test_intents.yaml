@@ -1,0 +1,58 @@
+# Specify intents to test here. Valid test cases are as follows:
+
+# Basic intent match tests only:
+#lang:
+#  intent_name:
+#    - example utterance
+#    - other example utterance
+
+# Intent tests with expected vocab/entity matches:
+#lang:
+#  intent_name:
+#    - example_utterance:
+#        - expected vocab name
+#        - other expected vocab name
+
+# Intent tests with specific vocab/entity extraction tests:
+#lang:
+#  intent_name:
+#    - example_utterance:
+#        - expected_vocab_key: expected_vocab_value
+#        - expected_entity_key: expected_entity_value
+
+
+en-us:
+  ask_chatgpt.intent:
+    - ask chat gpt what an umbrella is:
+        - question: what an umbrella is
+    - tell chatgpt my name is neon:
+        - question: my name is neon
+  chat_with_llm.intent:
+    - chat with chat gpt:
+        - llm: chat gpt
+    - talk to chatgpt:
+        - llm: chatgpt
+    - start a conversation with chat g p t:
+        - llm: chat g p t
+    - talk with chat g p t:
+        - llm: chat g p t
+    - i want to talk to chat gpt:
+        - llm: chat gpt
+  enable_fallback.intent:
+    - enable chat gpt fallback
+  disable_fallback.intent:
+    - disable chat g p t fallback skill
+  email_chat_history.intent:
+    - send me our conversation
+    - email me your chat history
+    - email me a copy of our conversation
+    - send me a transcript of our chat
+
+unmatched intents:
+  en-us:
+    - ask neon what time it is
+    - tell me about rocks
+    - enable wake words
+    - disable listening confirmation
+    - send me an email
+    - email me a support ticket
