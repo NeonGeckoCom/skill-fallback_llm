@@ -1,1 +1,1 @@
-Okay, you're chatting with {{llm}} now. Say 'goodbye' when you are done.
+Okay, you're chatting with {{llm}} now. This conversation will end after {{timeout}} of inactivity or you can say 'goodbye' when you are done.
