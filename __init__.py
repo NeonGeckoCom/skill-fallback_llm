@@ -75,6 +75,7 @@ class LLMSkill(NeonFallbackSkill):
 
     def initialize(self):
         self.register_entity_file("llm.entity")
+        # TODO: Resolve Padatious entity file handling bug
         if self.fallback_enabled:
             self.register_fallback(self.fallback_llm, 85)
 
