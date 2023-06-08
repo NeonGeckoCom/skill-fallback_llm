@@ -1,52 +1,12 @@
 # Changelog
 
-## [0.0.1a6](https://github.com/NeonGeckoCom/skill-fallback_llm/tree/0.0.1a6) (2023-06-07)
+## [0.0.2a1](https://github.com/NeonGeckoCom/skill-fallback_llm/tree/0.0.2a1) (2023-06-08)
 
-[Full Changelog](https://github.com/NeonGeckoCom/skill-fallback_llm/compare/0.0.1a5...0.0.1a6)
-
-**Merged pull requests:**
-
-- Add timeout notice to dialog [\#7](https://github.com/NeonGeckoCom/skill-fallback_llm/pull/7) ([NeonDaniel](https://github.com/NeonDaniel))
-
-## [0.0.1a5](https://github.com/NeonGeckoCom/skill-fallback_llm/tree/0.0.1a5) (2023-06-06)
-
-[Full Changelog](https://github.com/NeonGeckoCom/skill-fallback_llm/compare/0.0.1a4...0.0.1a5)
+[Full Changelog](https://github.com/NeonGeckoCom/skill-fallback_llm/compare/0.0.1...0.0.2a1)
 
 **Merged pull requests:**
 
-- Stable dependencies [\#6](https://github.com/NeonGeckoCom/skill-fallback_llm/pull/6) ([NeonDaniel](https://github.com/NeonDaniel))
-
-## [0.0.1a4](https://github.com/NeonGeckoCom/skill-fallback_llm/tree/0.0.1a4) (2023-05-15)
-
-[Full Changelog](https://github.com/NeonGeckoCom/skill-fallback_llm/compare/0.0.1a3...0.0.1a4)
-
-**Merged pull requests:**
-
-- Add intent to email chat history [\#3](https://github.com/NeonGeckoCom/skill-fallback_llm/pull/3) ([NeonDaniel](https://github.com/NeonDaniel))
-
-## [0.0.1a3](https://github.com/NeonGeckoCom/skill-fallback_llm/tree/0.0.1a3) (2023-05-13)
-
-[Full Changelog](https://github.com/NeonGeckoCom/skill-fallback_llm/compare/0.0.1a2...0.0.1a3)
-
-**Merged pull requests:**
-
-- Update intent for flexibility [\#4](https://github.com/NeonGeckoCom/skill-fallback_llm/pull/4) ([NeonDaniel](https://github.com/NeonDaniel))
-
-## [0.0.1a2](https://github.com/NeonGeckoCom/skill-fallback_llm/tree/0.0.1a2) (2023-05-12)
-
-[Full Changelog](https://github.com/NeonGeckoCom/skill-fallback_llm/compare/0.0.1a1...0.0.1a2)
-
-**Merged pull requests:**
-
-- Notification when LLM is active [\#2](https://github.com/NeonGeckoCom/skill-fallback_llm/pull/2) ([NeonDaniel](https://github.com/NeonDaniel))
-
-## [0.0.1a1](https://github.com/NeonGeckoCom/skill-fallback_llm/tree/0.0.1a1) (2023-05-11)
-
-[Full Changelog](https://github.com/NeonGeckoCom/skill-fallback_llm/compare/1c73c6a5e5a16b4644004c85d465bc690c0db506...0.0.1a1)
-
-**Merged pull requests:**
-
-- Initial implementation of Neon skill to connect to MQ service [\#1](https://github.com/NeonGeckoCom/skill-fallback_llm/pull/1) ([NeonDaniel](https://github.com/NeonDaniel))
+- Add more intent test cases [\#9](https://github.com/NeonGeckoCom/skill-fallback_llm/pull/9) ([NeonDaniel](https://github.com/NeonDaniel))
 
 
 
