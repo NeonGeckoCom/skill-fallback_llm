@@ -73,7 +73,7 @@ class LLMSkill(NeonFallbackSkill):
         return self.settings.get("fallback_enabled", False)
 
     def initialize(self):
-        self.register_entity_file("llm")
+        self.register_entity_file("llm.entity")
         if self.fallback_enabled:
             self.register_fallback(self.fallback_llm, 85)
 
