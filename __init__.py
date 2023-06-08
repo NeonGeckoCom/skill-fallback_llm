@@ -38,7 +38,8 @@ from neon_utils.skills.neon_fallback_skill import NeonFallbackSkill, NeonSkill
 from neon_utils.message_utils import get_message_user
 from neon_utils.user_utils import get_user_prefs
 from neon_mq_connector.utils.client_utils import send_mq_request
-from mycroft.skills.mycroft_skill.decorators import intent_file_handler
+
+from mycroft.skills.mycroft_skill.decorators import intent_handler
 
 
 class LLM(Enum):
@@ -87,21 +88,21 @@ class LLMSkill(NeonFallbackSkill):
         self.speak(answer)
         return True
 
-    @intent_file_handler("enable_fallback.intent")
+    @intent_handler("enable_fallback.intent")
     def handle_enable_fallback(self, message):
         if not self.fallback_enabled:
             self.settings['fallback_enabled'] = True
             self.register_fallback(self.fallback_llm, 85)
         self.speak_dialog("fallback_enabled")
 
-    @intent_file_handler("disable_fallback.intent")
+    @intent_handler("disable_fallback.intent")
     def handle_disable_fallback(self, message):
         if self.fallback_enabled:
             self.settings['fallback_enabled'] = False
             self.remove_fallback(self.fallback_llm)
         self.speak_dialog("fallback_disabled")
 
-    @intent_file_handler("ask_chatgpt.intent")
+    @intent_handler("ask_chatgpt.intent")
     def handle_ask_chatgpt(self, message):
         utterance = message.data['utterance']
         user = get_message_user(message) or self._default_user
@@ -112,7 +113,7 @@ class LLMSkill(NeonFallbackSkill):
             LOG.exception(e)
             self.speak_dialog("no_chatgpt")
 
-    @intent_file_handler("chat_with_llm.intent")
+    @intent_handler("chat_with_llm.intent")
     def handle_chat_with_llm(self, message):
         user = get_message_user(message) or self._default_user
         self.gui.show_controlled_notification(
@@ -129,7 +130,7 @@ class LLMSkill(NeonFallbackSkill):
                           private=True)
         self._reset_expiration(user)
 
-    @intent_file_handler("email_chat_history.intent")
+    @intent_handler("email_chat_history.intent")
     def handle_email_chat_history(self, message):
         user_prefs = get_user_prefs(message)['user']
         username = user_prefs['username']
