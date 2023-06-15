@@ -48,7 +48,7 @@ class LLM(Enum):
 
 class LLMSkill(NeonFallbackSkill):
     def __init__(self, **kwargs):
-        NeonFallbackSkill.__init__(**kwargs)
+        NeonFallbackSkill.__init__(self, **kwargs)
         self.chat_history = dict()
         self._default_user = "local"
         self.chatting = dict()
