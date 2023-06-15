@@ -47,6 +47,12 @@ class LLM(Enum):
 
 
 class LLMSkill(NeonFallbackSkill):
+    def __init__(self, **kwargs):
+        NeonFallbackSkill.__init__(self, **kwargs)
+        self.chat_history = dict()
+        self._default_user = "local"
+        self.chatting = dict()
+
     @classproperty
     def runtime_requirements(self):
         return RuntimeRequirements(internet_before_load=True,
@@ -59,12 +65,6 @@ class LLMSkill(NeonFallbackSkill):
                                    no_network_fallback=False,
                                    no_gui_fallback=True)
 
-    def __init__(self):
-        super().__init__("LLM")
-        self.chat_history = dict()
-        self._default_user = "local"
-        self.chatting = dict()
-
     @property
     def chat_timeout_seconds(self):
         return self.settings.get("chat_timeout_seconds") or 300
@@ -73,6 +73,7 @@ class LLMSkill(NeonFallbackSkill):
     def fallback_enabled(self):
         return self.settings.get("fallback_enabled", False)
 
+    # TODO: Move to __init__ after ovos-workshop stable release
     def initialize(self):
         self.register_entity_file("llm.entity")
         # TODO: Resolve Padatious entity file handling bug
@@ -219,7 +220,3 @@ class LLMSkill(NeonFallbackSkill):
         self.cancel_scheduled_event(event_name)
         self.schedule_event(self._stop_chatting, self.chat_timeout_seconds,
                             {'user': user}, event_name)
-
-
-def create_skill():
-    return LLMSkill()
