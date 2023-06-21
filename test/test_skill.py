@@ -92,7 +92,7 @@ class TestSkill(unittest.TestCase):
                            {"username": "test_user"})
         self.skill.handle_ask_chatgpt(fake_msg)
         mock.assert_called_once()
-        args = mock.call_args
+        args = mock.call_args[0]
         self.assertEqual(args[0], 'testing')
         self.assertEqual(args[1], 'test_user')
         self.assertEqual(args[2].value, LLM.GPT.value)
