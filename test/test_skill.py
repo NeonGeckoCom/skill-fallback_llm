@@ -36,6 +36,8 @@ from ovos_bus_client import Message
 from lingua_franca import load_language
 from mycroft.skills.skill_loader import SkillLoader
 
+from skill_fallback_llm import LLM
+
 
 class TestSkill(unittest.TestCase):
     @classmethod
@@ -89,7 +91,7 @@ class TestSkill(unittest.TestCase):
         fake_msg = Message("test", {"utterance": "testing"},
                            {"username": "test_user"})
         self.skill.handle_ask_chatgpt(fake_msg)
-        mock.assert_called_once_with("testing", "test_user")
+        mock.assert_called_once_with("testing", "test_user", LLM.GPT)
         self.skill.speak.assert_called_once_with("test")
 
         def raise_exception():
@@ -110,7 +112,7 @@ class TestSkill(unittest.TestCase):
         self.skill.chatting = dict()
         self.skill.handle_chat_with_llm(fake_msg)
         self.assertIsInstance(self.skill.chatting["test_user"][0], float)
-        self.assertIsNotNone(self.skill.chatting["test_user"][1])
+        self.assertEqual(self.skill.chatting["test_user"][1], LLM.GPT)
         self.skill.speak_dialog.assert_called_once_with(
             "start_chat", {"llm": "Chat GPT", "timeout": "five minutes"},
             private=True)
