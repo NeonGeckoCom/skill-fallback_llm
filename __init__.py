@@ -30,6 +30,7 @@ from threading import Thread
 from time import time
 
 from lingua_franca.format import nice_duration
+from ovos_bus_client import Message
 from ovos_utils import classproperty
 from ovos_utils.log import LOG
 from ovos_utils.process_utils import RuntimeRequirements
@@ -44,6 +45,7 @@ from mycroft.skills.mycroft_skill.decorators import intent_handler
 
 class LLM(Enum):
     GPT = "Chat GPT"
+    FASTCHAT = "FastChat"
 
 
 class LLMSkill(NeonFallbackSkill):
@@ -51,6 +53,7 @@ class LLMSkill(NeonFallbackSkill):
         NeonFallbackSkill.__init__(self, **kwargs)
         self.chat_history = dict()
         self._default_user = "local"
+        self._default_llm = LLM.FASTCHAT
         self.chatting = dict()
 
     @classproperty
@@ -83,7 +86,7 @@ class LLMSkill(NeonFallbackSkill):
     def fallback_llm(self, message):
         utterance = message.data['utterance']
         user = get_message_user(message) or self._default_user
-        answer = self._get_llm_response(utterance, user)
+        answer = self._get_llm_response(utterance, user, self._default_llm)
         if not answer:
             LOG.info(f"No fallback response")
             return False
@@ -104,12 +107,13 @@ class LLMSkill(NeonFallbackSkill):
             self.remove_fallback(self.fallback_llm)
         self.speak_dialog("fallback_disabled")
 
-    @intent_handler("ask_chatgpt.intent")
+    @intent_handler("ask_llm.intent")
     def handle_ask_chatgpt(self, message):
         utterance = message.data['utterance']
+        llm = self._get_requested_llm(message)
         user = get_message_user(message) or self._default_user
         try:
-            resp = self._get_llm_response(utterance, user)
+            resp = self._get_llm_response(utterance, user, llm)
             self.speak(resp)
         except Exception as e:
             LOG.exception(e)
@@ -120,17 +124,12 @@ class LLMSkill(NeonFallbackSkill):
         user = get_message_user(message) or self._default_user
         self.gui.show_controlled_notification(
             self.translate("notify_llm_active"))
-        llm = message.data.get('llm')
-        if self.voc_match(llm, "chat_gpt"):
-            llm = LLM.GPT
-        else:
-            LOG.warning(f"Requested invalid LLM: {llm}")
-            llm = LLM.GPT
+        llm = self._get_requested_llm(message)
         timeout_duration = nice_duration(self.chat_timeout_seconds)
         self.speak_dialog("start_chat", {"llm": llm.value,
                                          "timeout": timeout_duration},
                           private=True)
-        self._reset_expiration(user)
+        self._reset_expiration(user, llm)
 
     @intent_handler("email_chat_history.intent")
     def handle_email_chat_history(self, message):
@@ -167,18 +166,23 @@ class LLMSkill(NeonFallbackSkill):
         event_name = f"end_converse.{user}"
         self.cancel_scheduled_event(event_name)
 
-    def _get_llm_response(self, query: str, user: str) -> str:
+    def _get_llm_response(self, query: str, user: str, llm: LLM) -> str:
         """
         Get a response from an LLM
         :param query: User utterance to generate a response to
         :param user: Username making the request
         :returns: Speakable response to the user's query
         """
-        # TODO: support multiple LLM backends?
+        if llm == LLM.GPT:
+            queue = "chat_gpt_input"
+        elif llm == LLM.FASTCHAT:
+            queue = "fastchat_input"
+        else:
+            raise ValueError(f"Expected LLM, got: {llm}")
         self.chat_history.setdefault(user, list())
         mq_resp = send_mq_request("/llm", {"query": query,
                                            "history": self.chat_history[user]},
-                                  "chat_gpt_input")
+                                  queue)
         resp = mq_resp.get("response") or ""
         if resp:
             username = "user" if user == self._default_user else user
@@ -187,18 +191,30 @@ class LLMSkill(NeonFallbackSkill):
         LOG.debug(f"Got LLM response: {resp}")
         return resp
 
+    def _get_requested_llm(self, message: Message) -> LLM:
+        request = message.data.get('llm') or message.data.get('utterance')
+        if self.voc_match(request, "chat_gpt"):
+            llm = LLM.GPT
+        elif self.voc_match(request, "fastchat"):
+            llm = LLM.FASTCHAT
+        else:
+            LOG.warning(f"No valid LLM in request: {request}")
+            llm = LLM.GPT
+        return llm
+
     def converse(self, message=None):
         user = get_message_user(message) or self._default_user
         if user not in self.chatting:
             return False
-        last_message = self.chatting[user]
+        last_message = self.chatting[user][0]
         if time() - last_message > self.chat_timeout_seconds:
             LOG.info(f"Chat session timed out")
             self._stop_chatting(message)
             return False
         # Take final utterance as one that wasn't normalized
         utterance = message.data.get('utterances', [""])[-1]
-        if self.voc_match(utterance, "exit"):
+        if self.voc_match(utterance, "exit") and len(utterance.split()) < 4:
+            # TODO: Imperfect check for "stop" or "exit"
             self._stop_chatting(message)
             return True
         Thread(target=self._threaded_converse, args=(utterance, user),
@@ -207,15 +223,16 @@ class LLMSkill(NeonFallbackSkill):
 
     def _threaded_converse(self, utterance, user):
         try:
-            resp = self._get_llm_response(utterance, user)
+            llm = self.chatting[user][1]
+            resp = self._get_llm_response(utterance, user, llm)
             self.speak(resp)
-            self._reset_expiration(user)
+            self._reset_expiration(user, llm)
         except Exception as e:
             LOG.exception(e)
             self.speak_dialog("no_chatgpt")
 
-    def _reset_expiration(self, user):
-        self.chatting[user] = time()
+    def _reset_expiration(self, user, llm):
+        self.chatting[user] = (time(), llm)
         event_name = f"end_converse.{user}"
         self.cancel_scheduled_event(event_name)
         self.schedule_event(self._stop_chatting, self.chat_timeout_seconds,

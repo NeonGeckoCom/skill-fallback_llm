@@ -8,6 +8,7 @@ languages:
 vocab:
   - exit
   - chat_gpt
+  - fastchat
 # dialog is .dialog file basenames (case-sensitive)
 dialog:
   - end_chat
@@ -21,7 +22,7 @@ regex: []
 intents:
   # Padatious intents are the `.intent` file names
   padatious:
-    - ask_chatgpt.intent
+    - ask_llm.intent
     - chat_with_llm.intent
     - disable_fallback.intent
     - enable_fallback.intent
