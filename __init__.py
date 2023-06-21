@@ -213,7 +213,8 @@ class LLMSkill(NeonFallbackSkill):
             return False
         # Take final utterance as one that wasn't normalized
         utterance = message.data.get('utterances', [""])[-1]
-        if self.voc_match(utterance, "exit"):
+        if self.voc_match(utterance, "exit") and len(utterance.split()) < 4:
+            # TODO: Imperfect check for "stop" or "exit"
             self._stop_chatting(message)
             return True
         Thread(target=self._threaded_converse, args=(utterance, user),
