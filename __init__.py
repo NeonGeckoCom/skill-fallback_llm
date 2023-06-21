@@ -206,7 +206,7 @@ class LLMSkill(NeonFallbackSkill):
         user = get_message_user(message) or self._default_user
         if user not in self.chatting:
             return False
-        last_message = self.chatting[user]
+        last_message = self.chatting[user][0]
         if time() - last_message > self.chat_timeout_seconds:
             LOG.info(f"Chat session timed out")
             self._stop_chatting(message)
