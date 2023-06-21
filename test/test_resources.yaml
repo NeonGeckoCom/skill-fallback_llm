@@ -8,6 +8,7 @@ languages:
 vocab:
   - exit
   - chat_gpt
+  - fastchat
 # dialog is .dialog file basenames (case-sensitive)
 dialog:
   - end_chat

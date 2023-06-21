@@ -109,7 +109,8 @@ class TestSkill(unittest.TestCase):
                            {"username": "test_user"})
         self.skill.chatting = dict()
         self.skill.handle_chat_with_llm(fake_msg)
-        self.assertIsInstance(self.skill.chatting["test_user"], float)
+        self.assertIsInstance(self.skill.chatting["test_user"][0], float)
+        self.assertIsNotNone(self.skill.chatting["test_user"][1])
         self.skill.speak_dialog.assert_called_once_with(
             "start_chat", {"llm": "Chat GPT", "timeout": "five minutes"},
             private=True)
