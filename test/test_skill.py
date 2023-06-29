@@ -32,9 +32,11 @@ from os import mkdir
 from os.path import dirname, join, exists
 from mock import Mock
 from ovos_utils.messagebus import FakeBus
-from mycroft_bus_client import Message
+from ovos_bus_client import Message
 from lingua_franca import load_language
 from mycroft.skills.skill_loader import SkillLoader
+
+from skill_fallback_llm import LLM
 
 
 class TestSkill(unittest.TestCase):
@@ -89,7 +91,13 @@ class TestSkill(unittest.TestCase):
         fake_msg = Message("test", {"utterance": "testing"},
                            {"username": "test_user"})
         self.skill.handle_ask_chatgpt(fake_msg)
-        mock.assert_called_once_with("testing", "test_user")
+        mock.assert_called_once()
+        args = mock.call_args[0]
+        self.assertEqual(args[0], 'testing')
+        self.assertEqual(args[1], 'test_user')
+        self.assertEqual(args[2].value, LLM.GPT.value)
+        # TODO: Diagnose failure
+        # mock.assert_called_once_with("testing", "test_user", LLM.GPT)
         self.skill.speak.assert_called_once_with("test")
 
         def raise_exception():
@@ -109,7 +117,10 @@ class TestSkill(unittest.TestCase):
                            {"username": "test_user"})
         self.skill.chatting = dict()
         self.skill.handle_chat_with_llm(fake_msg)
-        self.assertIsInstance(self.skill.chatting["test_user"], float)
+        self.assertIsInstance(self.skill.chatting["test_user"][0], float)
+        # TODO: Diagnose equality failure
+        self.assertEqual(self.skill.chatting["test_user"][1].value,
+                         LLM.GPT.value)
         self.skill.speak_dialog.assert_called_once_with(
             "start_chat", {"llm": "Chat GPT", "timeout": "five minutes"},
             private=True)

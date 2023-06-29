@@ -1,12 +1,28 @@
 # Changelog
 
-## [0.0.2a1](https://github.com/NeonGeckoCom/skill-fallback_llm/tree/0.0.2a1) (2023-06-08)
+## [0.0.3a3](https://github.com/NeonGeckoCom/skill-fallback_llm/tree/0.0.3a3) (2023-06-21)
 
-[Full Changelog](https://github.com/NeonGeckoCom/skill-fallback_llm/compare/0.0.1...0.0.2a1)
+[Full Changelog](https://github.com/NeonGeckoCom/skill-fallback_llm/compare/0.0.3a2...0.0.3a3)
 
 **Merged pull requests:**
 
-- Add more intent test cases [\#9](https://github.com/NeonGeckoCom/skill-fallback_llm/pull/9) ([NeonDaniel](https://github.com/NeonDaniel))
+- Support Fast Chat endpoint [\#13](https://github.com/NeonGeckoCom/skill-fallback_llm/pull/13) ([NeonDaniel](https://github.com/NeonDaniel))
+
+## [0.0.3a2](https://github.com/NeonGeckoCom/skill-fallback_llm/tree/0.0.3a2) (2023-06-15)
+
+[Full Changelog](https://github.com/NeonGeckoCom/skill-fallback_llm/compare/0.0.3a1...0.0.3a2)
+
+**Merged pull requests:**
+
+- Deprecate `create_skill` method and update `__init__` for best practices [\#12](https://github.com/NeonGeckoCom/skill-fallback_llm/pull/12) ([NeonDaniel](https://github.com/NeonDaniel))
+
+## [0.0.3a1](https://github.com/NeonGeckoCom/skill-fallback_llm/tree/0.0.3a1) (2023-06-12)
+
+[Full Changelog](https://github.com/NeonGeckoCom/skill-fallback_llm/compare/0.0.2...0.0.3a1)
+
+**Merged pull requests:**
+
+- Refactor mycroft-messagebus-client to ovos-bus-client [\#11](https://github.com/NeonGeckoCom/skill-fallback_llm/pull/11) ([NeonDaniel](https://github.com/NeonDaniel))
 
 
 
