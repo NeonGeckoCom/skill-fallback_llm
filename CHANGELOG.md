@@ -1,28 +1,20 @@
 # Changelog
 
-## [0.0.3a3](https://github.com/NeonGeckoCom/skill-fallback_llm/tree/0.0.3a3) (2023-06-21)
+## [1.0.1a2](https://github.com/NeonGeckoCom/skill-fallback_llm/tree/1.0.1a2) (2023-10-11)
 
-[Full Changelog](https://github.com/NeonGeckoCom/skill-fallback_llm/compare/0.0.3a2...0.0.3a3)
-
-**Merged pull requests:**
-
-- Support Fast Chat endpoint [\#13](https://github.com/NeonGeckoCom/skill-fallback_llm/pull/13) ([NeonDaniel](https://github.com/NeonDaniel))
-
-## [0.0.3a2](https://github.com/NeonGeckoCom/skill-fallback_llm/tree/0.0.3a2) (2023-06-15)
-
-[Full Changelog](https://github.com/NeonGeckoCom/skill-fallback_llm/compare/0.0.3a1...0.0.3a2)
+[Full Changelog](https://github.com/NeonGeckoCom/skill-fallback_llm/compare/1.0.1a1...1.0.1a2)
 
 **Merged pull requests:**
 
-- Deprecate `create_skill` method and update `__init__` for best practices [\#12](https://github.com/NeonGeckoCom/skill-fallback_llm/pull/12) ([NeonDaniel](https://github.com/NeonDaniel))
+- More vocab option handling [\#16](https://github.com/NeonGeckoCom/skill-fallback_llm/pull/16) ([NeonDaniel](https://github.com/NeonDaniel))
 
-## [0.0.3a1](https://github.com/NeonGeckoCom/skill-fallback_llm/tree/0.0.3a1) (2023-06-12)
+## [1.0.1a1](https://github.com/NeonGeckoCom/skill-fallback_llm/tree/1.0.1a1) (2023-09-27)
 
-[Full Changelog](https://github.com/NeonGeckoCom/skill-fallback_llm/compare/0.0.2...0.0.3a1)
+[Full Changelog](https://github.com/NeonGeckoCom/skill-fallback_llm/compare/1.0.0...1.0.1a1)
 
 **Merged pull requests:**
 
-- Refactor mycroft-messagebus-client to ovos-bus-client [\#11](https://github.com/NeonGeckoCom/skill-fallback_llm/pull/11) ([NeonDaniel](https://github.com/NeonDaniel))
+- Update "Chat GPT" vocab from testing feedback [\#15](https://github.com/NeonGeckoCom/skill-fallback_llm/pull/15) ([NeonDaniel](https://github.com/NeonDaniel))
 
 
 
