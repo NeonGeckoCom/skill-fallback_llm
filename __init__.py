@@ -34,13 +34,11 @@ from ovos_bus_client import Message
 from ovos_utils import classproperty
 from ovos_utils.log import LOG
 from ovos_utils.process_utils import RuntimeRequirements
-# from ovos_workshop.skills.fallback import FallbackSkill
-from neon_utils.skills.neon_fallback_skill import NeonFallbackSkill, NeonSkill
-from neon_utils.message_utils import get_message_user
+from ovos_workshop.skills.fallback import FallbackSkillV1 as FallbackSkill
+from ovos_workshop.decorators import intent_handler
+from neon_utils.message_utils import get_message_user, dig_for_message
 from neon_utils.user_utils import get_user_prefs
 from neon_mq_connector.utils.client_utils import send_mq_request
-
-from mycroft.skills.mycroft_skill.decorators import intent_handler
 
 
 class LLM(Enum):
@@ -48,9 +46,9 @@ class LLM(Enum):
     FASTCHAT = "FastChat"
 
 
-class LLMSkill(NeonFallbackSkill):
+class LLMSkill(FallbackSkill):
     def __init__(self, **kwargs):
-        NeonFallbackSkill.__init__(self, **kwargs)
+        FallbackSkill.__init__(self, **kwargs)
         self.chat_history = dict()
         self._default_user = "local"
         self._default_llm = LLM.FASTCHAT
@@ -155,8 +153,7 @@ class LLMSkill(NeonFallbackSkill):
         for entry in history:
             formatted = entry[1].replace('\n\n', '\n').replace('\n', '\n\t...')
             email_text += f"[{entry[0]}] {formatted}\n"
-        NeonSkill.send_email(self, "LLM Conversation", email_text,
-                             email_addr=email)
+        self.send_email("LLM Conversation", email_text, email_addr=email)
 
     def _stop_chatting(self, message):
         user = get_message_user(message) or self._default_user
@@ -237,3 +234,38 @@ class LLMSkill(NeonFallbackSkill):
         self.cancel_scheduled_event(event_name)
         self.schedule_event(self._stop_chatting, self.chat_timeout_seconds,
                             {'user': user}, event_name)
+
+    # TODO: copied from NeonSkill. This method should be moved to a standalone
+    #       utility
+    def send_email(self, title, body, message=None, email_addr=None,
+                   attachments=None):
+        """
+        Send an email to the registered user's email.
+        Method here for backwards compatibility with Mycroft skills.
+        Email address priority: email_addr, user prefs from message,
+         fallback to DeviceApi for Mycroft method
+
+        Arguments:
+            title (str): Title of email
+            body  (str): HTML body of email. This supports
+                         simple HTML like bold and italics
+            email_addr (str): Optional email address to send message to
+            attachments (dict): Optional dict of file names to Base64 encoded files
+            message (Message): Optional message to get email from
+        """
+        message = message or dig_for_message()
+        if not email_addr and message:
+            email_addr = get_user_prefs(message)["user"].get("email")
+
+        if email_addr and send_mq_request:
+            LOG.info("Send email via Neon Server")
+            request_data = {"recipient": email_addr,
+                            "subject": title,
+                            "body": body,
+                            "attachments": attachments}
+            data = send_mq_request("/neon_emails", request_data,
+                                   "neon_emails_input")
+            return data.get("success")
+        else:
+            LOG.warning("Attempting to send email via Mycroft Backend")
+            super().send_email(title, body)
