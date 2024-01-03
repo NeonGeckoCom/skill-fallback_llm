@@ -35,11 +35,10 @@ from ovos_utils import classproperty
 from ovos_utils.log import LOG
 from ovos_utils.process_utils import RuntimeRequirements
 from ovos_workshop.skills.fallback import FallbackSkill
+from ovos_workshop.decorators import intent_handler
 from neon_utils.message_utils import get_message_user, dig_for_message
 from neon_utils.user_utils import get_user_prefs
 from neon_mq_connector.utils.client_utils import send_mq_request
-
-from mycroft.skills.mycroft_skill.decorators import intent_handler
 
 
 class LLM(Enum):
