@@ -34,7 +34,7 @@ from ovos_bus_client import Message
 from ovos_utils import classproperty
 from ovos_utils.log import LOG
 from ovos_utils.process_utils import RuntimeRequirements
-from ovos_workshop.skills.fallback import FallbackSkill
+from ovos_workshop.skills.fallback import FallbackSkillV1 as FallbackSkill
 from ovos_workshop.decorators import intent_handler
 from neon_utils.message_utils import get_message_user, dig_for_message
 from neon_utils.user_utils import get_user_prefs
