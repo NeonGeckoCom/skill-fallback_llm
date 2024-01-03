@@ -28,7 +28,7 @@
 
 import unittest
 
-from os import mkdir
+from os import mkdir, environ
 from os.path import dirname, join, exists
 from mock import Mock
 from ovos_utils.messagebus import FakeBus
@@ -40,6 +40,12 @@ from skill_fallback_llm import LLM
 
 
 class TestSkill(unittest.TestCase):
+    test_fs = join(dirname(__file__), "skill_fs")
+    data_dir = join(test_fs, "data")
+    conf_dir = join(test_fs, "config")
+    environ["XDG_DATA_HOME"] = data_dir
+    environ["XDG_CONFIG_HOME"] = conf_dir
+
     @classmethod
     def setUpClass(cls) -> None:
         bus = FakeBus()
@@ -49,15 +55,15 @@ class TestSkill(unittest.TestCase):
         cls.skill = skill_loader.instance
 
         # Define a directory to use for testing
-        cls.test_fs = join(dirname(__file__), "skill_fs")
-        if not exists(cls.test_fs):
-            mkdir(cls.test_fs)
+        # cls.test_fs = join(dirname(__file__), "skill_fs")
+        # if not exists(cls.test_fs):
+        #     mkdir(cls.test_fs)
 
         # Override the configuration and fs paths to use the test directory
-        cls.skill.settings_write_path = cls.test_fs
-        cls.skill.file_system.path = cls.test_fs
-        cls.skill._init_settings()
-        cls.skill.initialize()
+        # cls.skill.settings_write_path = cls.test_fs
+        # cls.skill.file_system.path = cls.test_fs
+        # cls.skill._init_settings()
+        # cls.skill.initialize()
 
         # Override speak and speak_dialog to test passed arguments
         cls.skill.speak = Mock()
