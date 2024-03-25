@@ -84,6 +84,7 @@ class LLMSkill(FallbackSkill):
     @fallback_handler(85)
     def fallback_llm(self, message):
         utterance = message.data['utterance']
+        LOG.info(f"Getting LLM response to: {utterance}")
         user = get_message_user(message) or self._default_user
         answer = self._get_llm_response(utterance, user, self._default_llm)
         if not answer:
