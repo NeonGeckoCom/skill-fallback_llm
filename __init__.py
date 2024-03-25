@@ -77,12 +77,11 @@ class LLMSkill(FallbackSkill):
     def fallback_enabled(self):
         return self.settings.get("fallback_enabled", False)
 
-    @property
-    def priority(self):
-        return 85 if self.fallback_enabled else 101
-
     @fallback_handler(85)
     def fallback_llm(self, message):
+        if not self.fallback_enabled:
+            LOG.info("LLM Fallback Disabled")
+            return False
         utterance = message.data['utterance']
         LOG.info(f"Getting LLM response to: {utterance}")
         user = get_message_user(message) or self._default_user
