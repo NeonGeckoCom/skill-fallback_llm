@@ -85,11 +85,15 @@ class LLMSkill(FallbackSkill):
         utterance = message.data['utterance']
         LOG.info(f"Getting LLM response to: {utterance}")
         user = get_message_user(message) or self._default_user
-        answer = self._get_llm_response(utterance, user, self._default_llm)
-        if not answer:
-            LOG.info(f"No fallback response")
-            return False
-        self.speak(answer)
+
+        def _threaded_get_response(utt, usr):
+            answer = self._get_llm_response(utt, usr, self._default_llm)
+            if not answer:
+                LOG.info(f"No fallback response")
+                return
+            self.speak(answer)
+
+        Thread(target=_threaded_get_response, args=(utterance, user), daemon=True).start()
         return True
 
     @intent_handler("enable_fallback.intent")
