@@ -39,6 +39,7 @@ from ovos_workshop.skills.fallback import FallbackSkill
 from ovos_workshop.decorators import intent_handler, fallback_handler
 from neon_utils.message_utils import get_message_user, dig_for_message
 from neon_utils.user_utils import get_user_prefs
+from neon_utils.hana_utils import request_backend
 from neon_mq_connector.utils.client_utils import send_mq_request
 
 
@@ -48,12 +49,12 @@ class LLM(Enum):
 
 
 class LLMSkill(FallbackSkill):
-    def __init__(self, **kwargs):
-        FallbackSkill.__init__(self, **kwargs)
-        self.chat_history = dict()
-        self._default_user = "local"
-        self._default_llm = LLM.FASTCHAT
-        self.chatting = dict()
+    chat_history = dict()
+    _default_user = "local"
+    _default_llm = LLM.FASTCHAT
+    chatting = dict()
+
+    def initialize(self):
         self.register_entity_file("llm.entity")
 
     @classproperty
@@ -174,10 +175,9 @@ class LLMSkill(FallbackSkill):
         else:
             raise ValueError(f"Expected LLM, got: {llm}")
         self.chat_history.setdefault(user, list())
-        mq_resp = send_mq_request("/llm", {"query": query,
-                                           "history": self.chat_history[user]},
-                                  queue)
-        resp = mq_resp.get("response") or ""
+        resp = request_backend(f"/llm/{endpoint}", {"query": query, "history": self.chat_history[user]})
+
+        resp = resp.get("response") or ""
         if resp:
             username = "user" if user == self._default_user else user
             self.chat_history[user].append((username, query))
