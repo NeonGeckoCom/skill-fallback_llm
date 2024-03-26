@@ -50,7 +50,7 @@ class LLM(Enum):
 
 class LLMSkill(FallbackSkill):
     def __init__(self, *args, **kwargs):
-        FallbackSkill.__init__(self, *args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.chat_history = dict()
         self._default_user = "local"
         self._default_llm = LLM.FASTCHAT
