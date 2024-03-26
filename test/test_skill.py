@@ -92,8 +92,7 @@ class TestSkill(SkillTestCase):
         self.assertEqual(self.skill.chatting["test_user"][1].value,
                          LLM.GPT.value)
         self.skill.speak_dialog.assert_called_once_with(
-            "start_chat", {"llm": "Chat GPT", "timeout": "five minutes"},
-            private=True)
+            "start_chat", {"llm": "Chat GPT", "timeout": "five minutes"})
 
     def test_handle_email_chat_history(self):
         real_send_email = self.skill._send_email
@@ -107,22 +106,19 @@ class TestSkill(SkillTestCase):
                                         "user_profiles": [default_profile]})
         # No Chat History
         self.skill.handle_email_chat_history(test_message)
-        self.skill.speak_dialog.assert_called_once_with("no_chat_history",
-                                                        private=True)
+        self.skill.speak_dialog.assert_called_once_with("no_chat_history")
 
         # No Email Address
         self.skill.chat_history['test_user'] = [("user", "hey"), ("llm", "hi")]
         self.skill.handle_email_chat_history(test_message)
-        self.skill.speak_dialog.assert_called_with("no_email_address",
-                                                   private=True)
+        self.skill.speak_dialog.assert_called_with("no_email_address")
 
         # Valid Request
         test_message.context['user_profiles'][0]['user']['email'] = \
             "test@neon.ai"
         self.skill.handle_email_chat_history(test_message)
         self.skill.speak_dialog.assert_called_with("sending_chat_history",
-                                                   {"email": "test@neon.ai"},
-                                                   private=True)
+                                                   {"email": "test@neon.ai"})
         self.skill._send_email.assert_called_once_with("test_user",
                                                        "test@neon.ai")
 
