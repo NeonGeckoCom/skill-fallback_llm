@@ -25,6 +25,7 @@
 # LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
 # NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 # SOFTWARE,  EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
 from enum import Enum
 from threading import Thread
 from time import time
@@ -34,10 +35,11 @@ from ovos_bus_client import Message
 from ovos_utils import classproperty
 from ovos_utils.log import LOG
 from ovos_utils.process_utils import RuntimeRequirements
-from ovos_workshop.skills.fallback import FallbackSkillV1 as FallbackSkill
-from ovos_workshop.decorators import intent_handler
+from ovos_workshop.skills.fallback import FallbackSkill
+from ovos_workshop.decorators import intent_handler, fallback_handler
 from neon_utils.message_utils import get_message_user, dig_for_message
 from neon_utils.user_utils import get_user_prefs
+from neon_utils.hana_utils import request_backend
 from neon_mq_connector.utils.client_utils import send_mq_request
 
 
@@ -47,12 +49,13 @@ class LLM(Enum):
 
 
 class LLMSkill(FallbackSkill):
-    def __init__(self, **kwargs):
-        FallbackSkill.__init__(self, **kwargs)
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         self.chat_history = dict()
         self._default_user = "local"
         self._default_llm = LLM.FASTCHAT
         self.chatting = dict()
+        self.register_entity_file("llm.entity")
 
     @classproperty
     def runtime_requirements(self):
@@ -74,35 +77,36 @@ class LLMSkill(FallbackSkill):
     def fallback_enabled(self):
         return self.settings.get("fallback_enabled", False)
 
-    # TODO: Move to __init__ after ovos-workshop stable release
-    def initialize(self):
-        self.register_entity_file("llm.entity")
-        # TODO: Resolve Padatious entity file handling bug
-        if self.fallback_enabled:
-            self.register_fallback(self.fallback_llm, 85)
-
+    @fallback_handler(85)
     def fallback_llm(self, message):
-        utterance = message.data['utterance']
-        user = get_message_user(message) or self._default_user
-        answer = self._get_llm_response(utterance, user, self._default_llm)
-        if not answer:
-            LOG.info(f"No fallback response")
+        if not self.fallback_enabled:
+            LOG.info("LLM Fallback Disabled")
             return False
-        self.speak(answer)
+        utterance = message.data['utterance']
+        LOG.info(f"Getting LLM response to: {utterance}")
+        user = get_message_user(message) or self._default_user
+
+        def _threaded_get_response(utt, usr):
+            answer = self._get_llm_response(utt, usr, self._default_llm)
+            if not answer:
+                LOG.info(f"No fallback response")
+                return
+            self.speak(answer)
+
+        # TODO: Speak filler?
+        Thread(target=_threaded_get_response, args=(utterance, user), daemon=True).start()
         return True
 
     @intent_handler("enable_fallback.intent")
     def handle_enable_fallback(self, message):
         if not self.fallback_enabled:
             self.settings['fallback_enabled'] = True
-            self.register_fallback(self.fallback_llm, 85)
         self.speak_dialog("fallback_enabled")
 
     @intent_handler("disable_fallback.intent")
     def handle_disable_fallback(self, message):
         if self.fallback_enabled:
             self.settings['fallback_enabled'] = False
-            self.remove_fallback(self.fallback_llm)
         self.speak_dialog("fallback_disabled")
 
     @intent_handler("ask_llm.intent")
@@ -125,8 +129,7 @@ class LLMSkill(FallbackSkill):
         llm = self._get_requested_llm(message)
         timeout_duration = nice_duration(self.chat_timeout_seconds)
         self.speak_dialog("start_chat", {"llm": llm.value,
-                                         "timeout": timeout_duration},
-                          private=True)
+                                         "timeout": timeout_duration})
         self._reset_expiration(user, llm)
 
     @intent_handler("email_chat_history.intent")
@@ -136,15 +139,15 @@ class LLMSkill(FallbackSkill):
         email_addr = user_prefs['email']
         if username not in self.chat_history:
             LOG.debug(f"No history for {username}")
-            self.speak_dialog("no_chat_history", private=True)
+            self.speak_dialog("no_chat_history")
             return
         if not email_addr:
             LOG.debug("No email address")
             # TODO: Capture Email address
-            self.speak_dialog("no_email_address", private=True)
+            self.speak_dialog("no_email_address")
             return
         self.speak_dialog("sending_chat_history",
-                          {"email": email_addr}, private=True)
+                          {"email": email_addr})
         self._send_email(username, email_addr)
 
     def _send_email(self, username: str, email: str):
@@ -171,16 +174,15 @@ class LLMSkill(FallbackSkill):
         :returns: Speakable response to the user's query
         """
         if llm == LLM.GPT:
-            queue = "chat_gpt_input"
+            endpoint = "chatgpt"
         elif llm == LLM.FASTCHAT:
-            queue = "fastchat_input"
+            endpoint = "fastchat"
         else:
             raise ValueError(f"Expected LLM, got: {llm}")
         self.chat_history.setdefault(user, list())
-        mq_resp = send_mq_request("/llm", {"query": query,
-                                           "history": self.chat_history[user]},
-                                  queue)
-        resp = mq_resp.get("response") or ""
+        resp = request_backend(f"/llm/{endpoint}", {"query": query, "history": self.chat_history[user]})
+
+        resp = resp.get("response") or ""
         if resp:
             username = "user" if user == self._default_user else user
             self.chat_history[user].append((username, query))
