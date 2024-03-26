@@ -49,12 +49,12 @@ class LLM(Enum):
 
 
 class LLMSkill(FallbackSkill):
-    chat_history = dict()
-    _default_user = "local"
-    _default_llm = LLM.FASTCHAT
-    chatting = dict()
-
-    def initialize(self):
+    def __init__(self, *args, **kwargs):
+        FallbackSkill.__init__(self, *args, **kwargs)
+        self.chat_history = dict()
+        self._default_user = "local"
+        self._default_llm = LLM.FASTCHAT
+        self.chatting = dict()
         self.register_entity_file("llm.entity")
 
     @classproperty
@@ -93,6 +93,7 @@ class LLMSkill(FallbackSkill):
                 return
             self.speak(answer)
 
+        # TODO: Speak filler?
         Thread(target=_threaded_get_response, args=(utterance, user), daemon=True).start()
         return True
 
