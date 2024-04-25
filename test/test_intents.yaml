@@ -22,11 +22,11 @@
 
 
 en-us:
-#  ask_llm.intent:
-#    - ask chat gpt what an umbrella is:
-#        - question: what an umbrella is
-#    - tell chatgpt my name is neon:
-#        - question: my name is neon
+  ask_llm.intent:
+    - ask chat gpt what an umbrella is:
+        - question: what an umbrella is
+    - tell chatgpt my name is neon:
+        - question: my name is neon
   chat_with_llm.intent:
     - chat with chat gpt:
         - llm: chat gpt
@@ -52,7 +52,7 @@ en-us:
 
 unmatched intents:
   en-us:
-#    - ask neon what time it is
+    - ask neon what time it is
     - tell me about rocks
     - enable wake words
     - disable listening confirmation
