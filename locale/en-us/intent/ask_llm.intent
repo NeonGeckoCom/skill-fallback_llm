@@ -1,1 +1,2 @@
-(ask|tell) (chatgpt|chat gpt|chat g p t|chat gpg|chat gptc|jack gpt|jack chi pt|fast chat|fastchat) {question}
+(ask|tell) (chat gpt|chat g p t|chat gpg|chatgpt|jack chi pt) {question}
+# TODO: multi-word entities appears broken in Padatious and Padacioso. For now, only support "chat gpt" here
