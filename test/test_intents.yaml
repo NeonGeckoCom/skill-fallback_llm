@@ -51,6 +51,9 @@ en-us:
     - send me a transcript of our chat
 
 unmatched intents:
+  config:
+    include_med: False
+    include_low: False
   en-us:
     - ask neon what time it is
     - tell me about rocks
