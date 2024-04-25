@@ -30,8 +30,8 @@ en-us:
   chat_with_llm.intent:
     - chat with chat gpt:
         - llm: chat gpt
-    - talk to chatgpt:
-        - llm: chatgpt
+#    - talk to chatgpt:
+#        - llm: chatgpt
     - start a conversation with chat g p t:
         - llm: chat g p t
     - talk with chat g p t:
