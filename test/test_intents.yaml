@@ -28,18 +28,20 @@ en-us:
     - tell chatgpt my name is neon:
         - question: my name is neon
   chat_with_llm.intent:
-    - chat with chat gpt
-#        - llm: chat gpt
-    - talk to chatgpt
-#        - llm: chatgpt
-    - start a conversation with chat g p t
-#        - llm: chat g p t
-    - talk with chat g p t
-#        - llm: chat g p t
-    - i want to talk to chat gpt
-#        - llm: chat gpt
+    - chat with chat gpt:
+        - llm: chat gpt
+    - talk to chatgpt:
+        - llm: chatgpt
+    - start a conversation with chat g p t:
+        - llm: chat g p t
+    - talk with chat g p t:
+        - llm: chat g p t
+    - i want to talk to chat gpt:
+        - llm: chat gpt
   enable_fallback.intent:
     - enable chat gpt fallback
+    - enable llm fallback skill
+    - enable large language model fall back
   disable_fallback.intent:
     - disable chat g p t fallback skill
   email_chat_history.intent:
