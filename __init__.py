@@ -31,7 +31,7 @@ from threading import Thread
 from time import time
 
 from lingua_franca.format import nice_duration
-from ovos_bus_client import Message
+from ovos_bus_client.message import Message
 from ovos_utils import classproperty
 from ovos_utils.log import LOG
 from ovos_utils.process_utils import RuntimeRequirements
