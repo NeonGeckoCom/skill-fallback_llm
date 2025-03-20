@@ -1,6 +1,6 @@
 # NEON AI (TM) SOFTWARE, Software Development Kit & Application Framework
 # All trademark and other rights reserved by their respective owners
-# Copyright 2008-2022 Neongecko.com Inc.
+# Copyright 2008-2025 Neongecko.com Inc.
 # Contributors: Daniel McKnight, Guy Daniels, Elon Gasper, Richard Leeds,
 # Regina Bloomstine, Casimiro Ferreira, Andrii Pernatii, Kirill Hrymailo
 # BSD-3 License
@@ -28,45 +28,15 @@
 
 import unittest
 
-from os import mkdir
-from os.path import dirname, join, exists
 from mock import Mock
-from ovos_utils.messagebus import FakeBus
 from ovos_bus_client import Message
 from lingua_franca import load_language
-from mycroft.skills.skill_loader import SkillLoader
+from neon_minerva.tests.skill_unit_test_base import SkillTestCase
 
 from skill_fallback_llm import LLM
 
 
-class TestSkill(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls) -> None:
-        bus = FakeBus()
-        bus.run_in_thread()
-        skill_loader = SkillLoader(bus, dirname(dirname(__file__)))
-        skill_loader.load()
-        cls.skill = skill_loader.instance
-
-        # Define a directory to use for testing
-        cls.test_fs = join(dirname(__file__), "skill_fs")
-        if not exists(cls.test_fs):
-            mkdir(cls.test_fs)
-
-        # Override the configuration and fs paths to use the test directory
-        cls.skill.settings_write_path = cls.test_fs
-        cls.skill.file_system.path = cls.test_fs
-        cls.skill._init_settings()
-        cls.skill.initialize()
-
-        # Override speak and speak_dialog to test passed arguments
-        cls.skill.speak = Mock()
-        cls.skill.speak_dialog = Mock()
-
-    def setUp(self):
-        self.skill.speak.reset_mock()
-        self.skill.speak_dialog.reset_mock()
-
+class TestSkill(SkillTestCase):
     def test_handle_enable_fallback(self):
         self.skill.handle_enable_fallback(None)
         self.skill.speak_dialog.assert_called_once_with("fallback_enabled")
@@ -122,8 +92,7 @@ class TestSkill(unittest.TestCase):
         self.assertEqual(self.skill.chatting["test_user"][1].value,
                          LLM.GPT.value)
         self.skill.speak_dialog.assert_called_once_with(
-            "start_chat", {"llm": "Chat GPT", "timeout": "five minutes"},
-            private=True)
+            "start_chat", {"llm": "Chat GPT", "timeout": "five minutes"})
 
     def test_handle_email_chat_history(self):
         real_send_email = self.skill._send_email
@@ -137,22 +106,19 @@ class TestSkill(unittest.TestCase):
                                         "user_profiles": [default_profile]})
         # No Chat History
         self.skill.handle_email_chat_history(test_message)
-        self.skill.speak_dialog.assert_called_once_with("no_chat_history",
-                                                        private=True)
+        self.skill.speak_dialog.assert_called_once_with("no_chat_history")
 
         # No Email Address
         self.skill.chat_history['test_user'] = [("user", "hey"), ("llm", "hi")]
         self.skill.handle_email_chat_history(test_message)
-        self.skill.speak_dialog.assert_called_with("no_email_address",
-                                                   private=True)
+        self.skill.speak_dialog.assert_called_with("no_email_address")
 
         # Valid Request
         test_message.context['user_profiles'][0]['user']['email'] = \
             "test@neon.ai"
         self.skill.handle_email_chat_history(test_message)
         self.skill.speak_dialog.assert_called_with("sending_chat_history",
-                                                   {"email": "test@neon.ai"},
-                                                   private=True)
+                                                   {"email": "test@neon.ai"})
         self.skill._send_email.assert_called_once_with("test_user",
                                                        "test@neon.ai")
 
