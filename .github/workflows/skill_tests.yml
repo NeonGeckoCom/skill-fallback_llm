@@ -15,6 +15,7 @@ jobs:
     with:
       test_padacioso: True
       test_padatious: True
+      ovos_versions: "[]"
   skill_resource_tests:
     uses: neongeckocom/.github/.github/workflows/skill_test_resources.yml@master
   skill_install_tests:

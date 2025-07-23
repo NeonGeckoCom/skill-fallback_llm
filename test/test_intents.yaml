@@ -48,6 +48,33 @@ en-us:
     - email me a copy of our conversation
     - send me a transcript of our chat
 
+uk-ua:
+  ask_llm.intent:
+    - запитай чат gpt що таке парасолька:
+        - question: що таке парасолька
+    - скажи chatgpt що мене звати неон:
+        - question: що мене звати неон
+  chat_with_llm.intent:
+    - поспілкуватися з чат gpt
+#        - llm: чат gpt
+    - поговорити з chatgpt
+#        - llm: chatgpt
+    - почати розмову з штучним інтелектом
+#        - llm: штучним інтелектом
+    - спілкуватися з мовною моделлю
+#        - llm: мовною моделлю
+    - я хочу поговорити з чат gpt
+#        - llm: чат gpt
+  enable_fallback.intent:
+    - увімкнути резервний навик chat gpt
+  disable_fallback.intent:
+    - вимкнути запасний навик чат gpt
+  email_chat_history.intent:
+    - надішли мені нашу розмову
+    - відправ мені історію чату
+    - надішли мені копію нашої бесіди
+    - відправ мені стенограму нашого чату
+
 unmatched intents:
   en-us:
     - ask neon what time it is
@@ -59,3 +86,13 @@ unmatched intents:
     - talk to me faster
     - talk to me slower
     - talk to me normally
+  uk-ua:
+    - запитай неон котра година
+    - розкажи мені про каміння
+    - увімкнути команди пробудження
+    - вимкнути підтвердження прослуховування
+    - надішли мені електронний лист
+    - відправ мені квиток підтримки
+    - говори зі мною швидше
+    - говори зі мною повільніше
+    - говори зі мною нормально
