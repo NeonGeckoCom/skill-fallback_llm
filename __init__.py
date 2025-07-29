@@ -89,7 +89,7 @@ class LLMSkill(FallbackSkill):
         def _threaded_get_response(utt, usr):
             answer = self._get_llm_response(utt, usr, self._default_llm)
             if not answer:
-                LOG.info(f"No fallback response")
+                LOG.info("No fallback response")
                 return
             self.speak(answer)
 
@@ -207,7 +207,7 @@ class LLMSkill(FallbackSkill):
             return False
         last_message = self.chatting[user][0]
         if time() - last_message > self.chat_timeout_seconds:
-            LOG.info(f"Chat session timed out")
+            LOG.info("Chat session timed out")
             self._stop_chatting(message)
             return False
         # Take final utterance as one that wasn't normalized
@@ -216,11 +216,12 @@ class LLMSkill(FallbackSkill):
             # TODO: Imperfect check for "stop" or "exit"
             self._stop_chatting(message)
             return True
-        Thread(target=self._threaded_converse, args=(utterance, user),
+        Thread(target=self._threaded_converse, args=(utterance, user, message),
                daemon=True).start()
         return True
 
-    def _threaded_converse(self, utterance, user):
+    def _threaded_converse(self, utterance: str, user: str, message: Message):
+        # `message` required to resolve response routing in `speak`
         try:
             llm = self.chatting[user][1]
             resp = self._get_llm_response(utterance, user, llm)
