@@ -209,8 +209,9 @@ class LLMSkill(FallbackSkill):
 
         resp = resp.get("response") or ""
         if resp:
-            username = "user" if user == self._default_user else user
-            self.chat_history[user].append((username, query))
+            # History roles must be the literal "user"/"llm" the backend maps;
+            # the per-user key identifies the history, not the message role.
+            self.chat_history[user].append(("user", query))
             self.chat_history[user].append(("llm", resp))
         LOG.debug(f"Got LLM response: {resp}")
         return resp
