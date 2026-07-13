@@ -124,6 +124,45 @@ class TestSkill(SkillTestCase):
 
         self.skill._send_email = real_send_email
 
+    def test_get_requested_llm(self):
+        cases = {
+            "ask chat gpt something": LLM.GPT,
+            "talk to fastchat": LLM.FASTCHAT,
+            "ask claude something": LLM.CLAUDE,
+            "chat with gemini": LLM.GEMINI,
+            "ask palm something": LLM.PALM,
+        }
+        for utterance, expected in cases.items():
+            message = Message("test", {"utterance": utterance})
+            self.assertEqual(self.skill._get_requested_llm(message), expected,
+                             utterance)
+        # Unrecognized LLM falls back to GPT
+        message = Message("test", {"utterance": "ask the robot something"})
+        self.assertEqual(self.skill._get_requested_llm(message), LLM.GPT)
+
+    def test_get_llm_response_endpoints(self):
+        from unittest.mock import patch
+        expected = {
+            LLM.GPT: "chatgpt",
+            LLM.FASTCHAT: "fastchat",
+            LLM.CLAUDE: "claude",
+            LLM.GEMINI: "gemini",
+            LLM.PALM: "palm",
+        }
+        real_history = self.skill.chat_history
+        try:
+            for llm, endpoint in expected.items():
+                self.skill.chat_history = dict()
+                with patch("skill_fallback_llm.request_backend",
+                           return_value={"response": "hi"}) as mock_backend:
+                    resp = self.skill._get_llm_response("hello", "endpoint_user",
+                                                        llm)
+                self.assertEqual(resp, "hi")
+                self.assertEqual(mock_backend.call_args[0][0],
+                                 f"/llm/{endpoint}")
+        finally:
+            self.skill.chat_history = real_history
+
     def test_converse(self):
         # TODO
         pass

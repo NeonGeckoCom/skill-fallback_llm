@@ -46,6 +46,9 @@ from neon_mq_connector.utils.client_utils import send_mq_request
 class LLM(Enum):
     GPT = "Chat GPT"
     FASTCHAT = "FastChat"
+    CLAUDE = "Claude"
+    GEMINI = "Gemini"
+    PALM = "PaLM"
 
 
 class LLMSkill(FallbackSkill):
@@ -177,6 +180,12 @@ class LLMSkill(FallbackSkill):
             endpoint = "chatgpt"
         elif llm == LLM.FASTCHAT:
             endpoint = "fastchat"
+        elif llm == LLM.CLAUDE:
+            endpoint = "claude"
+        elif llm == LLM.GEMINI:
+            endpoint = "gemini"
+        elif llm == LLM.PALM:
+            endpoint = "palm"
         else:
             raise ValueError(f"Expected LLM, got: {llm}")
         self.chat_history.setdefault(user, list())
@@ -196,6 +205,12 @@ class LLMSkill(FallbackSkill):
             llm = LLM.GPT
         elif self.voc_match(request, "fastchat"):
             llm = LLM.FASTCHAT
+        elif self.voc_match(request, "claude"):
+            llm = LLM.CLAUDE
+        elif self.voc_match(request, "gemini"):
+            llm = LLM.GEMINI
+        elif self.voc_match(request, "palm"):
+            llm = LLM.PALM
         else:
             LOG.warning(f"No valid LLM in request: {request}")
             llm = LLM.GPT
