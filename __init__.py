@@ -56,7 +56,6 @@ class LLMSkill(FallbackSkill):
         super().__init__(*args, **kwargs)
         self.chat_history = dict()
         self._default_user = "local"
-        self._default_llm = LLM.FASTCHAT
         self.chatting = dict()
         self.register_entity_file("llm.entity")
 
@@ -79,6 +78,23 @@ class LLMSkill(FallbackSkill):
     @property
     def fallback_enabled(self):
         return self.settings.get("fallback_enabled", False)
+
+    @property
+    def _default_llm(self) -> LLM:
+        """LLM used for the fallback handler and unrecognized requests.
+
+        Configurable via the `default_llm` setting (spoken name or enum name,
+        e.g. "chat gpt", "Chat GPT", or "GPT"); defaults to FastChat.
+        """
+        configured = self.settings.get("default_llm")
+        if not configured:
+            return LLM.FASTCHAT
+        requested = str(configured).strip().lower()
+        for llm in LLM:
+            if requested in (llm.value.lower(), llm.name.lower()):
+                return llm
+        LOG.warning(f"Unrecognized default_llm={configured!r}; using FastChat")
+        return LLM.FASTCHAT
 
     @fallback_handler(85)
     def fallback_llm(self, message):
