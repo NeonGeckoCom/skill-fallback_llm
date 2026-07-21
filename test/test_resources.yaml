@@ -11,7 +11,6 @@ vocab:
   - fastchat
   - claude
   - gemini
-  - palm
 # dialog is .dialog file basenames (case-sensitive)
 dialog:
   - end_chat

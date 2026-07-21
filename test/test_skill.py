@@ -130,7 +130,6 @@ class TestSkill(SkillTestCase):
             "talk to fastchat": LLM.FASTCHAT,
             "ask claude something": LLM.CLAUDE,
             "chat with gemini": LLM.GEMINI,
-            "ask palm something": LLM.PALM,
         }
         for utterance, expected in cases.items():
             message = Message("test", {"utterance": utterance})
@@ -147,7 +146,6 @@ class TestSkill(SkillTestCase):
             LLM.FASTCHAT: "fastchat",
             LLM.CLAUDE: "claude",
             LLM.GEMINI: "gemini",
-            LLM.PALM: "palm",
         }
         real_history = self.skill.chat_history
         try:

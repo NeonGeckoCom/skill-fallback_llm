@@ -12,7 +12,7 @@ To start conversing with an LLM, ask to "talk to Chat GPT" and have all of your 
 sent to an LLM until you say goodbye or stop talking for a while.
 
 Supported LLMs (subject to what your Neon Diana/Hana backend has deployed):
-Chat GPT, FastChat, Claude, Gemini, and PaLM. Name any of them in a request,
+Chat GPT, FastChat, Claude, and Gemini. Name any of them in a request,
 e.g. "ask Claude <something>" or "talk to Gemini".
 
 Enable fallback behavior by asking to "enable LLM fallback skill" or disable it
