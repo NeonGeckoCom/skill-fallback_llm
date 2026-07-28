@@ -46,6 +46,8 @@ from neon_mq_connector.utils.client_utils import send_mq_request
 class LLM(Enum):
     GPT = "Chat GPT"
     FASTCHAT = "FastChat"
+    CLAUDE = "Claude"
+    GEMINI = "Gemini"
 
 
 class LLMSkill(FallbackSkill):
@@ -53,7 +55,6 @@ class LLMSkill(FallbackSkill):
         super().__init__(*args, **kwargs)
         self.chat_history = dict()
         self._default_user = "local"
-        self._default_llm = LLM.FASTCHAT
         self.chatting = dict()
         self.register_entity_file("llm.entity")
 
@@ -77,6 +78,23 @@ class LLMSkill(FallbackSkill):
     def fallback_enabled(self):
         return self.settings.get("fallback_enabled", False)
 
+    @property
+    def _default_llm(self) -> LLM:
+        """LLM used for the fallback handler and unrecognized requests.
+
+        Configurable via the `default_llm` setting (spoken name or enum name,
+        e.g. "chat gpt", "Chat GPT", or "GPT"); defaults to FastChat.
+        """
+        configured = self.settings.get("default_llm")
+        if not configured:
+            return LLM.FASTCHAT
+        requested = str(configured).strip().lower()
+        for llm in LLM:
+            if requested in (llm.value.lower(), llm.name.lower()):
+                return llm
+        LOG.warning(f"Unrecognized default_llm={configured!r}; using FastChat")
+        return LLM.FASTCHAT
+
     @fallback_handler(85)
     def fallback_llm(self, message):
         if not self.fallback_enabled:
@@ -86,7 +104,8 @@ class LLMSkill(FallbackSkill):
         LOG.info(f"Getting LLM response to: {utterance}")
         user = get_message_user(message) or self._default_user
 
-        def _threaded_get_response(utt, usr):
+        def _threaded_get_response(utt, usr, message):
+            # `message` required to resolve response routing in `speak`
             answer = self._get_llm_response(utt, usr, self._default_llm)
             if not answer:
                 LOG.info("No fallback response")
@@ -94,7 +113,8 @@ class LLMSkill(FallbackSkill):
             self.speak(answer)
 
         # TODO: Speak filler?
-        Thread(target=_threaded_get_response, args=(utterance, user), daemon=True).start()
+        Thread(target=_threaded_get_response,
+               args=(utterance, user, message), daemon=True).start()
         return True
 
     @intent_handler("enable_fallback.intent")
@@ -177,6 +197,10 @@ class LLMSkill(FallbackSkill):
             endpoint = "chatgpt"
         elif llm == LLM.FASTCHAT:
             endpoint = "fastchat"
+        elif llm == LLM.CLAUDE:
+            endpoint = "claude"
+        elif llm == LLM.GEMINI:
+            endpoint = "gemini"
         else:
             raise ValueError(f"Expected LLM, got: {llm}")
         self.chat_history.setdefault(user, list())
@@ -184,8 +208,9 @@ class LLMSkill(FallbackSkill):
 
         resp = resp.get("response") or ""
         if resp:
-            username = "user" if user == self._default_user else user
-            self.chat_history[user].append((username, query))
+            # History roles must be the literal "user"/"llm" the backend maps;
+            # the per-user key identifies the history, not the message role.
+            self.chat_history[user].append(("user", query))
             self.chat_history[user].append(("llm", resp))
         LOG.debug(f"Got LLM response: {resp}")
         return resp
@@ -196,6 +221,10 @@ class LLMSkill(FallbackSkill):
             llm = LLM.GPT
         elif self.voc_match(request, "fastchat"):
             llm = LLM.FASTCHAT
+        elif self.voc_match(request, "claude"):
+            llm = LLM.CLAUDE
+        elif self.voc_match(request, "gemini"):
+            llm = LLM.GEMINI
         else:
             LOG.warning(f"No valid LLM in request: {request}")
             llm = LLM.GPT
